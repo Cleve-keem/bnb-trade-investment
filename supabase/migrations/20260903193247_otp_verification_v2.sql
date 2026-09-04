@@ -3,6 +3,16 @@
 -- =============================================================================
 
 -- =============================================================================
+-- Remove old generate_otp() definition
+-- =============================================================================
+
+drop function if exists public.generate_otp(
+    uuid,
+    public.otp_purpose
+);
+
+
+-- =============================================================================
 -- GENERATE OTP
 -- =============================================================================
 
@@ -212,6 +222,8 @@ grant execute on function public.verify_otp(uuid, public.otp_purpose, text) to a
 -- =============================================================================
 -- PREPARE FIRST LOGIN OTP
 -- =============================================================================
+
+drop function if exists public.prepare_first_login_otp(uuid);
 
 create or replace function public.prepare_first_login_otp(
     p_user_id uuid,

@@ -6,6 +6,30 @@ import {
 } from "@/libs/validations/auth";
 
 export const AuthService = {
+  async register(data: RegisterSchemaInput) {
+    const fullName = [data.lastname, data.firstname, data.middlename]
+      .filter(Boolean)
+      .join(" ");
+
+    const { data: authData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          username: data.username,
+          full_name: fullName.trim(),
+          phone: data.phoneNumber,
+        },
+      },
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return authData;
+  },
+
   async login(data: LoginSchemaInput) {
     const { data: result, error } = await supabase.auth.signInWithPassword({
       email: data.email,
@@ -36,40 +60,25 @@ export const AuthService = {
 
   async verifyOTP(otp: string) {
     if (!otp) {
-      throw new Error("Pls Enter the OTP sent to your email addresss!");
+      throw new Error("Please enter the OTP sent to your email address.");
     }
 
-    const OTP_digit = Number(otp);
-
-    if (OTP_digit != 458186) {
-      throw new Error("Invalid OTP!");
-    }
-
-    return true;
-  },
-
-  async register(data: RegisterSchemaInput) {
-    const fullName = [data.lastname, data.firstname, data.middlename]
-      .filter(Boolean)
-      .join(" ");
-
-    const { data: authData, error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          username: data.username,
-          full_name: fullName.trim(),
-          phone: data.phoneNumber,
-        },
+    const response = await fetch("/api/v1/auth/verify-otp", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ otp }),
     });
 
-    if (error) {
-      throw new Error(error.message);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Unable to verify OTP.");
     }
 
-    return authData;
+    return result;
   },
 
   async forgotPassword() {

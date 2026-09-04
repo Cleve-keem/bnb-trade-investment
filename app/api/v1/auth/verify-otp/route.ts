@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Get authenticated user
     const {
       data: { user },
       error: authError,
@@ -14,60 +15,156 @@ export async function POST(request: Request) {
 
     if (authError || !user) {
       return NextResponse.json(
-        { error: "Unauthorized session context. Please log in again." },
+        {
+          success: false,
+          error: "Unauthorized session context. Please log in again.",
+        },
         { status: 401 },
       );
     }
 
-    const { code } = await request.json();
+    // Read request body
+    const { otp } = await request.json();
+    console.log(otp);
 
-    if (!code) {
+    // Validate OTP
+    if (typeof otp !== "string" || !/^\d{6}$/.test(otp)) {
       return NextResponse.json(
-        { error: "Incomplete parameter sequence." },
+        {
+          success: false,
+          error: "OTP must be a 6-digit code.",
+        },
         { status: 400 },
       );
     }
 
-    const { data: records, error: dbError } = await supabase
-      .from("security_otps")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("otp_code", code)
-      .single();
+    // Complete first login
+    const { data, error: dbError } = await supabase.rpc(
+      "complete_first_login",
+      {
+        p_user_id: user.id,
+        p_code: otp,
+      },
+    );
 
-    if (dbError || !records) {
+    // Database/RPC error
+    if (dbError) {
+      console.error("complete_first_login RPC error:", dbError);
+
       return NextResponse.json(
-        { success: false, error: "Invalid security token code." },
+        {
+          success: false,
+          error: "Unable to verify OTP.",
+        },
+        { status: 500 },
+      );
+    }
+
+    // Invalid / expired / already-used OTP
+    if (!data) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid or expired OTP.",
+        },
         { status: 401 },
       );
     }
 
-    if (new Date() > new Date(records.expires_at)) {
-      return NextResponse.json(
-        { success: false, error: "Security token has expired." },
-        { status: 410 },
-      );
-    }
-
-    await supabase.from("security_otps").delete().eq("user_id", user.id);
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ is_otp_verified: true })
-      .eq("id", user.id);
-
-    if (updateError) {
-      throw updateError;
-    }
-
     return NextResponse.json({
       success: true,
-      message: "Ledger clearance authorized.",
+      message: "First login completed successfully.",
     });
-  } catch (error: any) {
+  } catch (error) {
+    console.error("First login verification error:", error);
+
     return NextResponse.json(
-      { error: "Internal validation cluster runtime fault." },
+      {
+        success: false,
+        error: "Internal validation error.",
+      },
       { status: 500 },
     );
   }
 }
+
+// import { createClient } from "@/libs/supabase/server";
+// import { cookies } from "next/headers";
+// import { NextResponse } from "next/server";
+
+// export async function POST(request: Request) {
+//   try {
+//     const cookieStore = await cookies();
+//     const supabase = createClient(cookieStore);
+
+//     const {
+//       data: { user },
+//       error: authError,
+//     } = await supabase.auth.getUser();
+
+//     if (authError || !user) {
+//       return NextResponse.json(
+//         { error: "Unauthorized session context. Please log in again." },
+//         { status: 401 },
+//       );
+//     }
+
+//     const body = await request.json();
+//     const { code } = body;
+
+//     if (typeof code !== "string" || !/^\d{6}$/.test(code)) {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           error: "OTP must be a 6-digit code.",
+//         },
+//         { status: 400 },
+//       );
+//     }
+
+//     // Verify OTP through PostgreSQL
+//     const { data, error: dbError } = await supabase.rpc(
+//       "complete_first_login",
+//       {
+//         p_user_id: user.id,
+//         p_code: code,
+//       },
+//     );
+
+//     if (dbError) {
+//       console.error("complete_first_login RPC error:", dbError);
+
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           error: "Unable to verify OTP.",
+//         },
+//         { status: 500 },
+//       );
+//     }
+
+//     if (!data) {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           error: "Invalid or expired OTP.",
+//         },
+//         { status: 401 },
+//       );
+//     }
+
+//     return NextResponse.json({
+//       success: true,
+//       message: "First login completed successfully.",
+//     });
+//   } catch (error: any) {
+//     console.error("First login verification error:", error);
+//     return NextResponse.json(
+//       {
+//         success: false,
+//         error: "Internal server error.",
+//       },
+//       { status: 500 },
+//     );
+//   }
+// }

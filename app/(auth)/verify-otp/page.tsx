@@ -6,22 +6,20 @@ import { KeyRound, ShieldAlert, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
 import { AuthService } from "@/services/auth.service";
-// import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
 
 export default function VerifyOtpForm() {
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [otp, setOtp] = useState("");
   const router = useRouter();
-  // const queryClient = useQueryClient();
-
   const user = useUser();
 
   const handleVerifySuccess = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (otp.length < 6) {
-      toast.error("Please enter a valid 6-digit cryptographic security code.");
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error("Please enter a valid 6-digit security code.");
       return;
     }
 
@@ -29,42 +27,32 @@ export default function VerifyOtpForm() {
     const loadingToast = toast.loading("Validating OTP authentication node...");
 
     try {
-      const res = await AuthService.verifyOTP(otp);
-
-      if (!res) {
-        return;
-      }
-
+      await AuthService.verifyOTP(otp);
       toast.dismiss(loadingToast);
       toast.success("Identity authorization verified. Ledger access granted.");
       router.push("/dashboard");
-
-      // const response = await fetch("/api/v1/auth/verify-otp", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     code: otp,
-      //   }),
-      // });
-
-      // const result = await response.json();
-
-      // if (!response.ok || !result.success) {
-      // throw new Error(result.error || "Mismatched validation credentials.");
-      // }
-
-      // queryClient.setQueryData(["auth-user"], (oldData: any) => {
-      // if (!oldData) return null;
-      // return {
-      // ...oldData,
-      // is_otp_verified: true,
-      // };
-      // });
-
     } catch (error: any) {
       toast.dismiss(loadingToast);
       toast.error(error.message || "OTP verification failed.");
       setIsVerifying(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setIsResending(true);
+
+    const loadingToast = toast.loading("Generating a new verification code...");
+
+    try {
+      // await AuthService.resendFirstLoginOtp();
+
+      toast.dismiss(loadingToast);
+      toast.success("A new verification code has been sent to your email.");
+    } catch (error: any) {
+      toast.dismiss(loadingToast);
+      toast.error(error.message || "Unable to resend verification code.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -85,7 +73,8 @@ export default function VerifyOtpForm() {
             </h3>
             <p className="text-xs text-gray-400">
               An encrypted one-time security code was sent to{" "}
-              <span className="text-white font-medium">{user.data?.email}</span>.
+              <span className="text-white font-medium">{user.data?.email}</span>
+              .
             </p>
           </div>
 
@@ -112,6 +101,21 @@ export default function VerifyOtpForm() {
             </button>
           </form>
 
+          <div className="text-center">
+            <p className="text-xs text-gray-500 mb-2">
+              Didn't receive the code or has it expired?
+            </p>
+
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              disabled={isResending}
+              className="text-sm text-[#e9ce39] hover:underline disabled:opacity-50"
+            >
+              {isResending ? "Sending new code..." : "Resend verification code"}
+            </button>
+          </div>
+
           <div className="border border-[#e9cf391f] bg-[#e9cf3905] p-4 rounded-lg space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#e9ce39]">
               <MessageSquare size={14} /> Contact Account Manager
@@ -127,3 +131,25 @@ export default function VerifyOtpForm() {
     </div>
   );
 }
+
+// const response = await fetch("/api/v1/auth/verify-otp", {
+//   method: "POST",
+//   headers: { "Content-Type": "application/json" },
+//   body: JSON.stringify({
+//     code: otp,
+//   }),
+// });
+
+// const result = await response.json();
+
+// if (!response.ok || !result.success) {
+// throw new Error(result.error || "Mismatched validation credentials.");
+// }
+
+// queryClient.setQueryData(["auth-user"], (oldData: any) => {
+// if (!oldData) return null;
+// return {
+// ...oldData,
+// is_otp_verified: true,
+// };
+// });
