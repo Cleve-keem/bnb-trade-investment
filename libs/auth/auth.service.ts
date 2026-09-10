@@ -32,7 +32,7 @@ export class AuthService {
         data: {
           email: credentials.email.trim(),
           username: credentials.username.trim(),
-          phone_number: credentials.phoneNumber.trim(),
+          phone: credentials.phoneNumber.trim(),
           first_name: credentials.firstname.trim(),
           last_name: credentials.lastname.trim(),
           middle_name: credentials.middlename?.trim(),

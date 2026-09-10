@@ -1,5 +1,6 @@
 "use client";
 
+import { OtpStatus, UserStatus } from "@/types/admin";
 import {
   Search,
   SlidersHorizontal,
@@ -13,116 +14,86 @@ import {
   Wallet,
   ChevronLeft,
   ChevronRight,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
-
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useAdminUsersList } from "@/hooks/admin";
 
-type UserStatus = "Active" | "Suspended" | "Pending";
-type OtpStatus = "Verified" | "Pending" | "Not Set";
-
-type AdminUser = {
-  id: string;
-  fullName: string;
-  email: string;
-  balance: number;
-  otpStatus: OtpStatus;
-  status: UserStatus;
-  joined: string;
-};
-
-const users: AdminUser[] = [
-  {
-    id: "USR-10002",
-    fullName: "John Smith",
-    email: "john@example.com",
-    balance: 42500,
-    otpStatus: "Verified",
-    status: "Active",
-    joined: "Aug 29, 2026",
-  },
-  {
-    id: "USR-10003",
-    fullName: "David James",
-    email: "david@example.com",
-    balance: 8200,
-    otpStatus: "Pending",
-    status: "Pending",
-    joined: "Aug 27, 2026",
-  },
-  {
-    id: "USR-10004",
-    fullName: "Sarah Adams",
-    email: "sarah@example.com",
-    balance: 125000,
-    otpStatus: "Verified",
-    status: "Active",
-    joined: "Aug 25, 2026",
-  },
-  {
-    id: "USR-10005",
-    fullName: "Michael Brown",
-    email: "michael@example.com",
-    balance: 15000,
-    otpStatus: "Not Set",
-    status: "Suspended",
-    joined: "Aug 23, 2026",
-  },
-  {
-    id: "USR-10006",
-    fullName: "Daniel Williams",
-    email: "daniel@example.com",
-    balance: 68500,
-    otpStatus: "Verified",
-    status: "Active",
-    joined: "Aug 20, 2026",
-  },
-  {
-    id: "USR-10007",
-    fullName: "Grace Johnson",
-    email: "grace@example.com",
-    balance: 9300,
-    otpStatus: "Pending",
-    status: "Pending",
-    joined: "Aug 18, 2026",
-  },
-  {
-    id: "USR-10008",
-    fullName: "Samuel Wilson",
-    email: "samuel@example.com",
-    balance: 47200,
-    otpStatus: "Verified",
-    status: "Active",
-    joined: "Aug 15, 2026",
-  },
-];
-
-const filters = ["All", "Active", "Pending", "Suspended"] as const;
+const filters = ["all", "active", "deleted", "suspended"] as const;
 
 type Filter = (typeof filters)[number];
 
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<Filter>("All");
+  const [filter, setFilter] = useState<Filter>("all");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const { users, isPending, isError, error, refetch } = useAdminUsersList();
 
   const filteredUsers = useMemo(() => {
+    const query = search.toLowerCase().trim();
     return users.filter((user) => {
       const matchesSearch =
-        user.fullName.toLowerCase().includes(search.toLowerCase()) ||
-        user.email.toLowerCase().includes(search.toLowerCase()) ||
-        user.id.toLowerCase().includes(search.toLowerCase());
-
-      const matchesFilter = filter === "All" || user.status === filter;
-
+        (user.full_name ?? "").toLowerCase().includes(query) ||
+        (user.email ?? "").toLowerCase().includes(query) ||
+        user.id.toLowerCase().includes(query);
+      const matchesFilter = filter === "all" || user.status === filter;
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter]);
+  }, [users, search, filter]);
 
-  const totalBalance = users.reduce((total, user) => total + user.balance, 0);
+  const totalBalance = users.reduce(
+    (total, user) => total + (user.wallet?.balance ?? 0),
+    0,
+  );
 
-  const activeUsers = users.filter((user) => user.status === "Active").length;
+  const activeUsers = users.filter((user) => user.status === "active").length;
+  const suspendedUsers = users.filter(
+    (user) => user.status === "suspended",
+  ).length;
 
-  const pendingUsers = users.filter((user) => user.status === "Pending").length;
+  if (isPending) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-400">
+          <Loader2 className="h-5 w-5 animate-spin text-[#f0b90b]" />
+          Loading investor profile...
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !users) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1016] p-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+            <XCircle className="h-6 w-6 text-red-400" />
+          </div>
+
+          <h2 className="text-lg font-semibold text-white">
+            Unable to load user
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            {error instanceof Error
+              ? error.message
+              : "The requested user could not be found."}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#f0b90b] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#d9a600]"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="space-y-6">
@@ -155,19 +126,16 @@ export default function AdminUsersPage() {
           value={users.length.toLocaleString()}
           icon={Users}
         />
-
         <SummaryCard
           title="Active Users"
           value={activeUsers.toLocaleString()}
           icon={CheckCircle2}
         />
-
         <SummaryCard
-          title="Pending Users"
-          value={pendingUsers.toLocaleString()}
+          title="Suspended Users"
+          value={suspendedUsers.toLocaleString()}
           icon={Clock3}
         />
-
         <SummaryCard
           title="Total Balance"
           value={formatCurrency(totalBalance)}
@@ -176,9 +144,9 @@ export default function AdminUsersPage() {
       </section>
 
       {/* Users table */}
-      <section className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025]">
+      <section className="overflow-hidden rounded-2xl border border-white/6 bg-white/2.5">
         {/* Toolbar */}
-        <div className="flex flex-col gap-4 border-b border-white/[0.06] p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/6 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
           {/* Search */}
           <div className="relative w-full lg:max-w-md">
             <Search
@@ -208,10 +176,10 @@ export default function AdminUsersPage() {
                 className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium transition ${
                   filter === item
                     ? "bg-[#f0b90b]/10 text-[#f0b90b]"
-                    : "text-zinc-500 hover:bg-white/[0.04] hover:text-white"
+                    : "text-zinc-500 hover:bg-white/4 hover:text-white"
                 }`}
               >
-                {item}
+                {item[0].toUpperCase() + item.slice(1)}
               </button>
             ))}
           </div>
@@ -221,7 +189,7 @@ export default function AdminUsersPage() {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-white/6">
                 <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
                   User
                 </th>
@@ -238,10 +206,6 @@ export default function AdminUsersPage() {
                   Status
                 </th>
 
-                <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
-                  Joined
-                </th>
-
                 <th className="w-12 px-5 py-4" />
               </tr>
             </thead>
@@ -250,16 +214,16 @@ export default function AdminUsersPage() {
               {filteredUsers.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-b border-white/[0.04] transition hover:bg-white/[0.02]"
+                  className="border-b border-white/4 transition hover:bg-white/2"
                 >
                   {/* User */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <UserAvatar name={user.fullName} />
+                      <UserAvatar name={user.full_name} />
 
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-white">
-                          {user.fullName}
+                          {user.full_name}
                         </p>
 
                         <p className="truncate text-xs text-zinc-600">
@@ -272,23 +236,19 @@ export default function AdminUsersPage() {
                   {/* Balance */}
                   <td className="px-5 py-4">
                     <p className="text-sm font-medium text-white">
-                      {formatCurrency(user.balance)}
+                      {formatCurrency(user.wallet?.balance)}
                     </p>
                   </td>
 
                   {/* OTP */}
                   <td className="px-5 py-4">
-                    <OtpBadge status={user.otpStatus} />
+                    {/* <OtpBadge status={user.latest_otp?.code} /> */}
+                    <OTPCode code={user.latest_otp?.otp_code} />
                   </td>
 
                   {/* Status */}
                   <td className="px-5 py-4">
                     <StatusBadge status={user.status} />
-                  </td>
-
-                  {/* Joined */}
-                  <td className="px-5 py-4">
-                    <p className="text-xs text-zinc-500">{user.joined}</p>
                   </td>
 
                   {/* Actions */}
@@ -297,12 +257,14 @@ export default function AdminUsersPage() {
                       onClick={() =>
                         setOpenMenu(openMenu === user.id ? null : user.id)
                       }
-                      className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
+                      className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
                     >
                       <MoreHorizontal size={18} />
                     </button>
 
-                    {openMenu === user.id && <UserActionMenu />}
+                    {openMenu === user.id && (
+                      <UserActionMenu userId={user.id} />
+                    )}
                   </td>
                 </tr>
               ))}
@@ -311,22 +273,19 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Mobile cards */}
-        <div className="divide-y divide-white/[0.05] lg:hidden">
+        <div className="divide-y divide-white/5 lg:hidden">
           {filteredUsers.map((user) => (
-            <div key={user.id} className="p-4 transition hover:bg-white/[0.02]">
+            <div key={user.id} className="p-4 transition hover:bg-white/2">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <UserAvatar name={user.fullName} />
-
+                  <UserAvatar name={user.full_name} />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-white">
-                      {user.fullName}
+                      {user.full_name}
                     </p>
-
                     <p className="truncate text-xs text-zinc-600">
                       {user.email}
                     </p>
-
                     <p className="mt-1 text-[10px] text-zinc-700">{user.id}</p>
                   </div>
                 </div>
@@ -348,7 +307,7 @@ export default function AdminUsersPage() {
                   </p>
 
                   <p className="mt-1 text-sm font-medium text-white">
-                    {formatCurrency(user.balance)}
+                    {formatCurrency(user.wallet?.balance)}
                   </p>
                 </div>
 
@@ -358,7 +317,8 @@ export default function AdminUsersPage() {
                   </p>
 
                   <div className="mt-1">
-                    <OtpBadge status={user.otpStatus} />
+                    {/* <OtpBadge status={user.latest_otp?.is_used} /> */}
+                    <OTPCode code={user.latest_otp?.otp_code} />
                   </div>
                 </div>
 
@@ -371,19 +331,11 @@ export default function AdminUsersPage() {
                     <StatusBadge status={user.status} />
                   </div>
                 </div>
-
-                <div className="rounded-xl border border-white/[0.05] bg-black/10 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-zinc-600">
-                    Joined
-                  </p>
-
-                  <p className="mt-1 text-xs text-zinc-400">{user.joined}</p>
-                </div>
               </div>
 
               {openMenu === user.id && (
                 <div className="mt-3">
-                  <UserActionMenu />
+                  <UserActionMenu userId={user.id} />
                 </div>
               )}
             </div>
@@ -480,8 +432,25 @@ function UserAvatar({ name }: { name: string }) {
   );
 }
 
+function OTPCode({ code }: { code: number }) {
+  if (!code) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-500/10 px-2.5 py-1 text-[10px] font-medium text-zinc-500">
+        No OTP
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400">
+      <ShieldCheck size={11} />
+      {code}
+    </span>
+  );
+}
+
 function OtpBadge({ status }: { status: OtpStatus }) {
-  if (status === "Verified") {
+  if (status === "used") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400">
         <ShieldCheck size={11} />
@@ -490,7 +459,7 @@ function OtpBadge({ status }: { status: OtpStatus }) {
     );
   }
 
-  if (status === "Pending") {
+  if (status === "pending") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f0b90b]/10 px-2.5 py-1 text-[10px] font-medium text-[#f0b90b]">
         <Clock3 size={11} />
@@ -507,7 +476,7 @@ function OtpBadge({ status }: { status: OtpStatus }) {
 }
 
 function StatusBadge({ status }: { status: UserStatus }) {
-  if (status === "Active") {
+  if (status === "active") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -516,11 +485,11 @@ function StatusBadge({ status }: { status: UserStatus }) {
     );
   }
 
-  if (status === "Pending") {
+  if (status === "suspended") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f0b90b]/10 px-2.5 py-1 text-[10px] font-medium text-[#f0b90b]">
         <Clock3 size={11} />
-        Pending
+        Suspended
       </span>
     );
   }
@@ -528,25 +497,28 @@ function StatusBadge({ status }: { status: UserStatus }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-2.5 py-1 text-[10px] font-medium text-red-400">
       <XCircle size={11} />
-      Suspended
+      Deleted
     </span>
   );
 }
 
-function UserActionMenu() {
+function UserActionMenu({ userId }: { userId: string }) {
   return (
     <div className="absolute right-5 z-20 mt-1 w-44 overflow-hidden rounded-xl border border-white/[0.08] bg-[#11161d] p-1.5 shadow-2xl">
-      <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/[0.04] hover:text-white">
+      <Link
+        href={`/admin/users/${userId}`}
+        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/4 hover:text-white"
+      >
         <Eye size={14} />
         View user
-      </button>
+      </Link>
 
-      <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/[0.04] hover:text-white">
+      <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/4 hover:text-white">
         <Wallet size={14} />
         View wallet
       </button>
 
-      <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/[0.04] hover:text-white">
+      <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:bg-white/4 hover:text-white">
         <ShieldCheck size={14} />
         View security
       </button>

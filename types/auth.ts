@@ -16,7 +16,7 @@ export type UserProfile = {
   middle_name?: string | undefined;
   email: string;
   username: string;
-  phone_number?: string;
+  phone?: string;
   user_role: "investor" | "admin";
   is_suspended: boolean;
   is_emai_verified?: boolean;

@@ -49,7 +49,7 @@ function SettingRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[0.05] py-5 last:border-0 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-b border-white/5 py-5 last:border-0 sm:flex-row sm:items-center sm:justify-between">
       <div className="max-w-xl">
         <p className="text-sm font-medium text-white">{title}</p>
         <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
@@ -72,8 +72,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/[0.06] bg-[#0b1016]">
-      <div className="flex items-start gap-4 border-b border-white/[0.06] p-5">
+    <section className="rounded-2xl border border-white/6 bg-[#0b1016]">
+      <div className="flex items-start gap-4 border-b border-white/6 p-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0b90b]/10 text-[#f0b90b]">
           <Icon size={19} />
         </div>
@@ -108,7 +108,7 @@ function Input({
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 text-sm text-white outline-none transition placeholder:text-zinc-700 focus:border-[#f0b90b]/40"
+        className="h-11 w-full rounded-xl border border-white/6 bg-white/2.5 px-3 text-sm text-white outline-none transition placeholder:text-zinc-700 focus:border-[#f0b90b]/40"
       />
     </div>
   );
@@ -164,7 +164,7 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#080c11] text-white">
-      <div className="mx-auto max-w-[1100px] space-y-6 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-275 space-y-6 p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

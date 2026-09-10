@@ -213,7 +213,7 @@ export default function AdminDepositsPage() {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-white/6">
                 <Head>User</Head>
                 <Head>Deposit ID</Head>
                 <Head>Amount</Head>
@@ -228,7 +228,7 @@ export default function AdminDepositsPage() {
               {filteredDeposits.map((deposit) => (
                 <tr
                   key={deposit.id}
-                  className="border-b border-white/[0.04] hover:bg-white/[0.02]"
+                  className="border-b border-white/4 hover:bg-white/2"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">

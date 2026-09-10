@@ -10,10 +10,6 @@
 -- Rename old column
 -- =============================================================================
 
-alter table public.otp_verifications
-rename column otp_code_hash to otp_code;
-
-
 create table if not exists public.otp_verifications (
 
     id uuid primary key

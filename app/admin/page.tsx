@@ -1,128 +1,68 @@
 "use client";
 
-import {
-  Users,
-  Wallet,
-  BriefcaseBusiness,
-  ArrowUpFromLine,
-  ArrowDownToLine,
-  Activity,
-  TrendingUp,
-  AlertTriangle,
-} from "lucide-react";
-
-import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminOverviewChart from "@/components/admin/AdminOverviewChart";
 import RecentActivity from "@/components/admin/RecentActivity";
 import PendingActions from "@/components/admin/PendingAction";
+import { useAdminDashboard } from "@/hooks/admin";
+import PageHeader from "@/components/admin/dashboard/PageHeader";
+import PrimaryStats from "@/components/admin/dashboard/PrimaryStats";
+import SecondaryStats from "@/components/admin/dashboard/SecondaryStats";
+import { Loader2, RefreshCw, XCircle } from "lucide-react";
 
 export default function AdminDashboardPage() {
-  return (
-    <main className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#f0b90b]">
-              Admin Overview
-            </p>
+  const { dashboard, isError, isPending, error, refetch } = useAdminDashboard();
 
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Dashboard
-            </h1>
-
-            <p className="mt-2 max-w-xl text-sm text-zinc-500">
-              Monitor users, investments, transactions and platform activity
-              from one place.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-400" />
-
-            <span className="text-xs text-zinc-400">System operational</span>
-          </div>
+  if (isPending) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-400">
+          <Loader2 className="h-5 w-5 animate-spin text-[#f0b90b]" />
+          Loading dashboard overview...
         </div>
       </div>
+    );
+  }
 
-      {/* Stats */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <AdminStatCard
-          title="Total Users"
-          value="12,482"
-          change="12.4%"
-          positive
-          icon={Users}
-        />
+  if (isError || !dashboard) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1016] p-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+            <XCircle className="h-6 w-6 text-red-400" />
+          </div>
 
-        <AdminStatCard
-          title="Total Wallet Balance"
-          value="$8.12M"
-          change="5.7%"
-          positive
-          icon={Wallet}
-        />
+          <h2 className="text-lg font-semibold text-white">
+            Unable to load dashboard
+          </h2>
 
-        <AdminStatCard
-          title="Total Investments"
-          value="$4.82M"
-          change="8.2%"
-          positive
-          icon={BriefcaseBusiness}
-        />
+          <p className="mt-2 text-sm text-gray-500">
+            {error instanceof Error
+              ? error.message
+              : "The requested user could not be found."}
+          </p>
 
-        <AdminStatCard
-          title="Pending Withdrawals"
-          value="24"
-          change="4.8%"
-          positive={false}
-          icon={ArrowUpFromLine}
-        />
-      </section>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#f0b90b] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#d9a600]"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Secondary stats */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <AdminStatCard
-          title="Deposits Today"
-          value="$182,450"
-          change="14.2%"
-          positive
-          icon={ArrowDownToLine}
-        />
-
-        <AdminStatCard
-          title="Transactions Today"
-          value="1,284"
-          change="9.6%"
-          positive
-          icon={Activity}
-        />
-
-        <AdminStatCard
-          title="Platform Returns"
-          value="$742K"
-          change="11.3%"
-          positive
-          icon={TrendingUp}
-        />
-
-        <AdminStatCard
-          title="Active Alerts"
-          value="7"
-          change="2 new"
-          positive={false}
-          icon={AlertTriangle}
-        />
-      </section>
-
-      {/* Chart + Activity */}
+  return (
+    <main className="space-y-8">
+      <PageHeader />
+      <PrimaryStats stats={dashboard.stats} />
+      <SecondaryStats stats={dashboard.stats} />
       <section className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         <AdminOverviewChart />
-
-        <RecentActivity />
+        <RecentActivity recentActivity={dashboard.recentActivity} />
       </section>
-
-      {/* Pending actions */}
       <section>
         <PendingActions />
       </section>

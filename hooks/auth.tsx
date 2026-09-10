@@ -36,7 +36,7 @@ export function useLoginMutation() {
       // Admin
       if (profile.role === "admin") {
         toast.success("Welcome back!");
-        router.push("/admin/dashboard");
+        router.push("/admin");
         return;
       }
 
