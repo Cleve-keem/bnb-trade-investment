@@ -32,7 +32,7 @@ export default function DashboardPage() {
             <p className="text-sm text-zinc-500">{formatLongDate()}</p>
 
             <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-              Welcome Back, Eve 👋
+              Welcome Back, Berry 👋
             </h1>
 
             <p className="mt-2 text-sm text-zinc-500">

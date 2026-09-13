@@ -12,15 +12,12 @@ export default function PortfolioPage() {
             Detailed overview of your asset allocation.
           </p>
         </div>
-
         <div className="grid gap-4 sm:grid-cols-3">
           <Metric title="Total Value" value="$324,719.26" />
           <Metric title="Total Invested" value="$322,609.45" />
           {/* <Metric title="Total Return" value="+$18,420" /> */}
         </div>
-
         <PortfolioChart />
-
         <div className="overflow-hidden rounded-2xl border border-white/6 bg-[#0d131a]">
           <div className="border-b border-white/6 p-5">
             <h2 className="font-medium">Holdings</h2>
@@ -71,7 +68,6 @@ export default function PortfolioPage() {
                         </span>
                       </div>
                     </td>
-
                     <td className="px-5 py-5 text-sm text-emerald-400">
                       +{holding.change}%
                     </td>

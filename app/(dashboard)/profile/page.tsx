@@ -17,7 +17,6 @@ export default function ProfilePage() {
 
   function saveProfile() {
     setSaved(true);
-
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -31,7 +30,6 @@ export default function ProfilePage() {
               Manage your personal information and account security.
             </p>
           </div>
-
           <LogoutButton />
         </div>
 
@@ -41,13 +39,12 @@ export default function ProfilePage() {
           <div className="-mt-12 px-6 pb-6 sm:px-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
               <div className="flex h-24 w-24 items-center justify-center rounded-3xl border-4 border-[#0d131a] bg-[#f0b90b] text-3xl font-bold text-black">
-                E
+                B
               </div>
 
               <div className="pb-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold">Elisa Eve</h2>
-
+                  <h2 className="text-xl font-semibold">Berry Ice</h2>
                   <CheckCircle2 size={17} className="text-emerald-400" />
                 </div>
 
@@ -67,7 +64,7 @@ export default function ProfilePage() {
               <Field
                 label="Full Name"
                 icon={<User size={16} />}
-                value="Elisa Eve"
+                value="Berry Ice"
               />
 
               <Field label="Username" icon={<User size={16} />} value="Eve" />
@@ -75,13 +72,13 @@ export default function ProfilePage() {
               <Field
                 label="Email"
                 icon={<Mail size={16} />}
-                value="Jimby10017@gmail.com"
+                value="berryIce@gmail.com"
               />
 
               <Field
                 label="Phone"
                 icon={<Phone size={16} />}
-                value="+1 (810) 991-4117"
+                value="+1 (810) 746-5628"
               />
             </div>
 
@@ -110,11 +107,11 @@ export default function ProfilePage() {
                 status="Protected"
               />
 
-              <SecurityItem
+              {/* <SecurityItem
                 icon={<ShieldCheck size={17} />}
                 title="Two-factor authentication"
                 status="Enabled"
-              />
+              /> */}
             </div>
           </div>
         </div>

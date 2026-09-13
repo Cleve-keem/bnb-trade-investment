@@ -48,7 +48,7 @@ export function useLoginMutation() {
             `/verify-otp?email=${encodeURIComponent(variables.email)}`,
           );
           return;
-        } catch (error) {
+        } catch (error: any) {
           toast.error(
             error instanceof Error
               ? error.message

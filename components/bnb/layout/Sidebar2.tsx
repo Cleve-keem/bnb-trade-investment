@@ -86,7 +86,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
 
           <div>
             <p className="text-xl font-bold tracking-tight">BNB</p>
-
             <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">
               Trading
             </p>
@@ -97,9 +96,7 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
       {/* Scrollable Navigation */}
       <div className="min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
         <NavSection title="Overview" items={mainNavigation} onClose={onClose} />
-
         <NavSection title="Invest" items={investNavigation} onClose={onClose} />
-
         <NavSection
           title="Activity"
           items={activityNavigation}
@@ -111,7 +108,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
           <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
             Account
           </p>
-
           {/* Profile */}
           <Link
             href="/profile"
@@ -187,32 +183,20 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
         </button>
 
         {navigation}
-
         {/* Bottom Account Card */}
         <div className="mt-4 shrink-0">
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold">
-                E
+                B
               </div>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium">Elisa Eve</p>
-
-                <p className="truncate text-xs text-zinc-500">Tier 3 account</p>
+                <p className="truncate text-sm font-medium">Berry Ice</p>
+                <p className="truncate text-xs text-zinc-500">Tier 1 account</p>
               </div>
             </div>
           </div>
-
-          {/*
-          <button
-            type="button"
-            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-zinc-500 hover:bg-red-500/10 hover:text-red-400"
-          >
-            <LogOut size={18} />
-            Sign out
-          </button>
-          */}
         </div>
       </aside>
     </>

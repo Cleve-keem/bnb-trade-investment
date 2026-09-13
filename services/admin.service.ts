@@ -1,4 +1,3 @@
-import { transactions } from "@/libs/bnb/demo-data";
 import { supabase } from "@/libs/supabase/browser";
 
 const adminService = {
