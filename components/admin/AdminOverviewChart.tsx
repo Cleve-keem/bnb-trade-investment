@@ -25,7 +25,6 @@ export default function AdminOverviewChart() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-white">Platform Overview</p>
-
           <p className="mt-1 text-xs text-zinc-500">Total investment volume</p>
         </div>
 
@@ -36,7 +35,7 @@ export default function AdminOverviewChart() {
         </select>
       </div>
 
-      <div className="h-[280px] w-full">
+      <div className="h-70 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
@@ -48,7 +47,6 @@ export default function AdminOverviewChart() {
                 y2="1"
               >
                 <stop offset="0%" stopColor="#f0b90b" stopOpacity={0.22} />
-
                 <stop offset="100%" stopColor="#f0b90b" stopOpacity={0} />
               </linearGradient>
             </defs>

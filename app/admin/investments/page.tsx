@@ -192,20 +192,14 @@ const formatCurrency = (amount: number) =>
 export default function InvestmentsPage() {
   const [investments, setInvestments] =
     useState<Investment[]>(initialInvestments);
-
   const [search, setSearch] = useState("");
-
   const [statusFilter, setStatusFilter] = useState<"All" | InvestmentStatus>(
     "All",
   );
-
   const [planFilter, setPlanFilter] = useState("All");
-
   const [selectedInvestment, setSelectedInvestment] =
     useState<Investment | null>(null);
-
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-
   const plans = [
     "All",
     ...Array.from(new Set(investments.map((investment) => investment.plan))),
@@ -214,7 +208,6 @@ export default function InvestmentsPage() {
   const filteredInvestments = useMemo(() => {
     return investments.filter((investment) => {
       const searchTerm = search.toLowerCase();
-
       const matchesSearch =
         investment.fullName.toLowerCase().includes(searchTerm) ||
         investment.email.toLowerCase().includes(searchTerm) ||
@@ -223,10 +216,8 @@ export default function InvestmentsPage() {
 
       const matchesStatus =
         statusFilter === "All" || investment.status === statusFilter;
-
       const matchesPlan =
         planFilter === "All" || investment.plan === planFilter;
-
       return matchesSearch && matchesStatus && matchesPlan;
     });
   }, [investments, search, statusFilter, planFilter]);
@@ -266,13 +257,12 @@ export default function InvestmentsPage() {
           : investment,
       ),
     );
-
     setOpenMenu(null);
   };
 
   return (
     <div className="min-h-screen bg-[#080c11] text-white">
-      <div className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-400 p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -281,11 +271,9 @@ export default function InvestmentsPage() {
               <span>/</span>
               <span className="text-zinc-300">Investments</span>
             </div>
-
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Investments
             </h1>
-
             <p className="mt-1 text-sm text-zinc-500">
               Monitor and manage user investments across the platform.
             </p>
@@ -325,7 +313,7 @@ export default function InvestmentsPage() {
         </div>
 
         {/* Filters */}
-        <div className="mb-5 rounded-2xl border border-white/[0.06] bg-[#0b1016] p-4">
+        <div className="mb-5 rounded-2xl border border-white/6 bg-[#0b1016] p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             {/* Search */}
             <div className="relative w-full xl:max-w-md">
@@ -338,7 +326,7 @@ export default function InvestmentsPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search user, reference or plan..."
-                className="h-11 w-full rounded-xl border border-white/[0.06] bg-white/[0.025] pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-[#f0b90b]/40"
+                className="h-11 w-full rounded-xl border border-white/6 bg-white/2.5 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-[#f0b90b]/40"
               />
             </div>
 
@@ -367,18 +355,16 @@ export default function InvestmentsPage() {
                   </button>
                 ))}
               </div>
-
               {/* Plan filter */}
               <div className="relative shrink-0">
                 <Filter
                   size={14}
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600"
                 />
-
                 <select
                   value={planFilter}
                   onChange={(event) => setPlanFilter(event.target.value)}
-                  className="h-10 w-full appearance-none rounded-xl border border-white/[0.06] bg-white/[0.025] pl-9 pr-9 text-xs text-zinc-300 outline-none focus:border-[#f0b90b]/40 sm:w-44"
+                  className="h-10 w-full appearance-none rounded-xl border border-white/6 bg-white/2.5 pl-9 pr-9 text-xs text-zinc-300 outline-none focus:border-[#f0b90b]/40 sm:w-44"
                 >
                   {plans.map((plan) => (
                     <option key={plan} value={plan} className="bg-[#0d131a]">
@@ -386,7 +372,6 @@ export default function InvestmentsPage() {
                     </option>
                   ))}
                 </select>
-
                 <ChevronDown
                   size={14}
                   className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600"
@@ -397,49 +382,40 @@ export default function InvestmentsPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0b1016] lg:block">
+        <div className="hidden overflow-hidden rounded-2xl border border-white/6 bg-[#0b1016] lg:block">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1250px]">
+            <table className="w-full min-w-312.5">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-white/[0.015]">
+                <tr className="border-b border-white/6 bg-white/1.5">
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Investor
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Plan
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Amount
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     ROI
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Expected Return
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Duration
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     End Date
                   </th>
-
                   <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Status
                   </th>
-
                   <th className="px-5 py-4 text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-600">
                     Actions
                   </th>
                 </tr>
               </thead>
-
               <tbody>
                 {filteredInvestments.map((investment) => (
                   <tr
@@ -452,12 +428,10 @@ export default function InvestmentsPage() {
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-xs font-semibold text-zinc-300">
                           {getInitials(investment.fullName)}
                         </div>
-
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium text-white">
                             {investment.fullName}
                           </p>
-
                           <p className="mt-0.5 truncate text-xs text-zinc-600">
                             {investment.reference}
                           </p>
@@ -468,19 +442,16 @@ export default function InvestmentsPage() {
                     {/* Plan */}
                     <td className="px-5 py-5">
                       <p className="text-sm text-zinc-300">{investment.plan}</p>
-
                       <p className="mt-0.5 text-xs text-zinc-600">
                         {investment.duration} {investment.durationUnit}
                       </p>
                     </td>
-
                     {/* Amount */}
                     <td className="px-5 py-5">
                       <p className="text-sm font-semibold text-white">
                         {formatCurrency(investment.amount)}
                       </p>
                     </td>
-
                     {/* ROI */}
                     <td className="px-5 py-5">
                       <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400">
@@ -494,7 +465,6 @@ export default function InvestmentsPage() {
                       <p className="text-sm font-medium text-white">
                         {formatCurrency(investment.expectedReturn)}
                       </p>
-
                       <p className="mt-0.5 text-xs text-emerald-400">
                         +{formatCurrency(investment.profit)}
                       </p>
@@ -507,18 +477,15 @@ export default function InvestmentsPage() {
                         {investment.duration} {investment.durationUnit}
                       </div>
                     </td>
-
                     {/* End Date */}
                     <td className="px-5 py-5">
                       <p className="text-sm text-zinc-300">
                         {investment.endDate}
                       </p>
-
                       <p className="mt-0.5 text-xs text-zinc-600">
                         Started {investment.startDate}
                       </p>
                     </td>
-
                     {/* Status */}
                     <td className="px-5 py-5">
                       <StatusBadge status={investment.status} />
@@ -537,7 +504,6 @@ export default function InvestmentsPage() {
                         >
                           <MoreHorizontal size={18} />
                         </button>
-
                         {openMenu === investment.id && (
                           <InvestmentMenu
                             investment={investment}
@@ -555,10 +521,8 @@ export default function InvestmentsPage() {
               </tbody>
             </table>
           </div>
-
           {filteredInvestments.length === 0 && <EmptyState />}
         </div>
-
         {/* Mobile Cards */}
         <div className="space-y-4 lg:hidden">
           {filteredInvestments.map((investment) => (
@@ -571,65 +535,53 @@ export default function InvestmentsPage() {
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-xs font-semibold text-zinc-300">
                     {getInitials(investment.fullName)}
                   </div>
-
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">
                       {investment.fullName}
                     </p>
-
                     <p className="mt-0.5 truncate text-xs text-zinc-600">
                       {investment.reference}
                     </p>
                   </div>
                 </div>
-
                 <StatusBadge status={investment.status} />
               </div>
-
               <div className="mt-5 rounded-xl border border-[#f0b90b]/10 bg-[#f0b90b]/[0.025] p-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-zinc-600">
                       Investment Plan
                     </p>
-
                     <p className="mt-1 text-sm font-semibold text-white">
                       {investment.plan}
                     </p>
                   </div>
-
                   <TrendingUp size={18} className="text-[#f0b90b]" />
                 </div>
               </div>
-
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <InfoBox
                   label="Amount"
                   value={formatCurrency(investment.amount)}
                 />
-
                 <InfoBox
                   label="ROI"
                   value={`${investment.roi}%`}
                   valueClass="text-emerald-400"
                 />
-
                 <InfoBox
                   label="Expected Return"
                   value={formatCurrency(investment.expectedReturn)}
                 />
-
                 <InfoBox
                   label="Profit"
                   value={`+${formatCurrency(investment.profit)}`}
                   valueClass="text-emerald-400"
                 />
-
                 <InfoBox
                   label="Duration"
                   value={`${investment.duration} ${investment.durationUnit}`}
                 />
-
                 <InfoBox label="End Date" value={investment.endDate} />
               </div>
 
@@ -653,7 +605,6 @@ export default function InvestmentsPage() {
               </div>
             </div>
           ))}
-
           {filteredInvestments.length === 0 && <EmptyState />}
         </div>
 
@@ -668,7 +619,6 @@ export default function InvestmentsPage() {
               of <span className="text-zinc-300">{investments.length}</span>{" "}
               investments
             </p>
-
             <div className="flex items-center gap-2">
               <button
                 disabled
@@ -676,11 +626,9 @@ export default function InvestmentsPage() {
               >
                 <ChevronLeft size={15} />
               </button>
-
               <span className="rounded-lg bg-white/[0.05] px-3 py-2 text-zinc-300">
                 1
               </span>
-
               <button
                 disabled
                 className="rounded-lg border border-white/[0.06] p-2 text-zinc-700"
@@ -721,17 +669,15 @@ function SummaryCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-[#0b1016] p-5">
+    <div className="rounded-2xl border border-white/6 bg-[#0b1016] p-5">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-medium text-zinc-500">{label}</p>
-
           <p className={`mt-2 text-2xl font-bold tracking-tight ${valueClass}`}>
             {value}
           </p>
         </div>
-
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/4">
           <Icon size={17} className="text-[#f0b90b]" />
         </div>
       </div>
@@ -785,7 +731,7 @@ function InfoBox({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.05] bg-white/[0.015] p-3">
+    <div className="rounded-xl border border-white/5 bg-white/1.5 p-3">
       <p className="text-[10px] uppercase tracking-wider text-zinc-600">
         {label}
       </p>

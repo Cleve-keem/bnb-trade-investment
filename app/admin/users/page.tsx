@@ -20,15 +20,16 @@ import {
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useAdminUsersList } from "@/hooks/admin";
+import AddUserModal from "@/components/admin/users/AddUserModal";
 
 const filters = ["all", "active", "deleted", "suspended"] as const;
-
 type Filter = (typeof filters)[number];
 
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
   const { users, isPending, isError, error, refetch } = useAdminUsersList();
 
   const filteredUsers = useMemo(() => {
@@ -42,7 +43,6 @@ export default function AdminUsersPage() {
       return matchesSearch && matchesFilter;
     });
   }, [users, search, filter]);
-
   const totalBalance = users.reduce(
     (total, user) => total + (user.wallet?.balance ?? 0),
     0,
@@ -71,17 +71,14 @@ export default function AdminUsersPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
             <XCircle className="h-6 w-6 text-red-400" />
           </div>
-
           <h2 className="text-lg font-semibold text-white">
             Unable to load user
           </h2>
-
           <p className="mt-2 text-sm text-gray-500">
             {error instanceof Error
               ? error.message
               : "The requested user could not be found."}
           </p>
-
           <button
             type="button"
             onClick={() => refetch()}
@@ -103,22 +100,22 @@ export default function AdminUsersPage() {
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#f0b90b]">
             User Management
           </p>
-
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             Users
           </h1>
-
           <p className="mt-2 text-sm text-zinc-500">
             Manage registered users and monitor their account status.
           </p>
         </div>
-
-        <button className="flex w-fit items-center gap-2 rounded-xl bg-[#f0b90b] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#f5c52c]">
+        <button
+          type="button"
+          onClick={() => setShowAddUserModal(true)}
+          className="flex w-fit items-center gap-2 rounded-xl bg-[#f0b90b] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#f5c52c]"
+        >
           <Users size={17} />
           Add User
         </button>
       </div>
-
       {/* Summary cards */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryCard
@@ -168,7 +165,6 @@ export default function AdminUsersPage() {
               <SlidersHorizontal size={14} />
               <span className="hidden sm:block">Filter</span>
             </div>
-
             {filters.map((item) => (
               <button
                 key={item}
@@ -184,7 +180,6 @@ export default function AdminUsersPage() {
             ))}
           </div>
         </div>
-
         {/* Desktop table */}
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full">
@@ -220,7 +215,6 @@ export default function AdminUsersPage() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <UserAvatar name={user.full_name} />
-
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-white">
                           {user.full_name}
@@ -232,7 +226,6 @@ export default function AdminUsersPage() {
                       </div>
                     </div>
                   </td>
-
                   {/* Balance */}
                   <td className="px-5 py-4">
                     <p className="text-sm font-medium text-white">
@@ -361,7 +354,7 @@ export default function AdminUsersPage() {
         )}
 
         {/* Footer */}
-        <div className="flex flex-col gap-3 border-t border-white/[0.06] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex flex-col gap-3 border-t border-white/6 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <p className="text-xs text-zinc-600">
             Showing{" "}
             <span className="text-zinc-400">{filteredUsers.length}</span> of{" "}
@@ -369,20 +362,22 @@ export default function AdminUsersPage() {
           </p>
 
           <div className="flex items-center gap-1">
-            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] text-zinc-600 transition hover:bg-white/[0.04] hover:text-white">
+            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/6 text-zinc-600 transition hover:bg-white/4 hover:text-white">
               <ChevronLeft size={15} />
             </button>
-
             <button className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-[#f0b90b]/10 px-2 text-xs font-medium text-[#f0b90b]">
               1
             </button>
-
-            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] text-zinc-600 transition hover:bg-white/[0.04] hover:text-white">
+            <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/6 text-zinc-600 transition hover:bg-white/4 hover:text-white">
               <ChevronRight size={15} />
             </button>
           </div>
         </div>
       </section>
+
+      {showAddUserModal && (
+        <AddUserModal onClose={() => setShowAddUserModal(false)} />
+      )}
     </main>
   );
 }
