@@ -188,15 +188,12 @@ export default function AdminUsersPage() {
                 <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
                   User
                 </th>
-
                 <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
                   Balance
                 </th>
-
                 <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
                   OTP
                 </th>
-
                 <th className="px-5 py-4 text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
                   Status
                 </th>

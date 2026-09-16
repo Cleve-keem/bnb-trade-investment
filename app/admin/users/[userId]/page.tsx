@@ -199,7 +199,8 @@ export default function AdminUserDetailsPage() {
     await walletAdjustmentMutation.mutateAsync({
       walletId: wallet.id,
       amount: adjustmentMode === "credit" ? numericAmount : -numericAmount,
-      adjustmentType: adjustmentMode === "credit" ? "credit" : "debit",
+      adjustmentType:
+        adjustmentMode === "credit" ? "credit_correction" : "debit_correction",
       reason: reason.trim(),
       notes: notes?.trim() || null,
     });

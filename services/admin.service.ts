@@ -6,7 +6,6 @@ const adminService = {
    * ADMIN USERS LIST
    * ============================================================
    */
-
   async fetchUserProfiles() {
     const { data: profiles, error } = await supabase
       .from("users")
@@ -336,7 +335,7 @@ const adminService = {
   }: {
     walletId: string;
     amount: number;
-    adjustmentType: "credit" | "debit";
+    adjustmentType: "credit_correction" | "debit_correction";
     reason: string;
     notes?: string | null;
   }) {

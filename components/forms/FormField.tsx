@@ -31,7 +31,6 @@ export default function FormField({
         <label className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
           Full Legal Name
         </label>
-
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           <input
             type="text"
@@ -43,7 +42,6 @@ export default function FormField({
             {...register("firstname")}
             placeholder="First name"
           />
-
           <input
             type="text"
             className={`w-full rounded-md border bg-[#121212] px-3 py-2 text-sm outline-none transition-all ${
@@ -54,7 +52,6 @@ export default function FormField({
             {...register("middlename")}
             placeholder="Middle name (Optional)"
           />
-
           <input
             type="text"
             className={`w-full rounded-md border bg-[#121212] px-3 py-2 text-sm outline-none transition-all ${
@@ -66,7 +63,6 @@ export default function FormField({
             placeholder="Last name"
           />
         </div>
-
         {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
       </div>
     );
@@ -82,17 +78,14 @@ export default function FormField({
         className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400"
       >
         {field.name}
-
         {field.name && <span className="ml-1 text-[#dabc17]">*</span>}
       </label>
-
       <div className="relative flex w-full items-center">
         {field.icon && (
           <div className="token-icon pointer-events-none absolute left-3 z-10 text-gray-500">
             <field.icon size={18} />
           </div>
         )}
-
         {isSelectType ? (
           <select
             id={field.fieldName}
@@ -120,7 +113,6 @@ export default function FormField({
             }
           />
         )}
-
         {isPasswordType && (
           <button
             type="button"
@@ -132,7 +124,6 @@ export default function FormField({
           </button>
         )}
       </div>
-
       {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
     </div>
   );

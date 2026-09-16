@@ -6,7 +6,7 @@ import { KeyRound, ShieldAlert, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
 import { AuthService } from "@/services/auth.service";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/user";
 
 export default function VerifyOtpForm() {
   const [isVerifying, setIsVerifying] = useState(false);

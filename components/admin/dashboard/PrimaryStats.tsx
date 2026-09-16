@@ -24,7 +24,7 @@ export default function PrimaryStats({
 
       <AdminStatCard
         title="Total Wallet Balance"
-        value={stats.totalWalletBalance.toLocaleString()}
+        value={`$${stats.totalWalletBalance.toLocaleString()}`}
         change="5.7%"
         positive
         icon={Wallet}

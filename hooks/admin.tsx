@@ -304,7 +304,7 @@ export function useAdminWalletAdjustmentMutation(userId: string) {
     }: {
       walletId: string;
       amount: number;
-      adjustmentType: "credit" | "debit";
+      adjustmentType: "credit_correction" | "debit_correction";
       reason: string;
       notes?: string | null;
     }) => {
