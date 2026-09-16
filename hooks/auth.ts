@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -7,6 +7,7 @@ import UserService from "@/services/user.service";
 
 export function useLoginMutation() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: AuthService.login,
@@ -57,7 +58,7 @@ export function useLoginMutation() {
           return;
         }
       }
-
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success(`Welcome back!`);
       router.push("/dashboard");
     },
@@ -156,6 +157,7 @@ export function useForgotPasswordMutation(onSuccessCallback?: () => void) {
 
 export function useLogoutMutation() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate: logout, isPending } = useMutation({
     mutationFn: AuthService.logout,
@@ -169,11 +171,14 @@ export function useLogoutMutation() {
         id: toastId,
       });
 
-      router.push("/login");
+      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.removeQueries({ queryKey: ["user-dashboard"] });
+      router.replace("/login");
+      router.refresh();
     },
 
     onError: (_, __, toastId) => {
-      toast.error("Failed to log out", {
+      toast.error("Unable to log out. Please try again.", {
         id: toastId,
       });
     },

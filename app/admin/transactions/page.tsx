@@ -202,9 +202,9 @@ export default function AdminTransactionsPage() {
       </section>
 
       {/* Transactions */}
-      <section className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025]">
+      <section className="overflow-hidden rounded-2xl border border-white/6 bg-white/2.5">
         {/* Toolbar */}
-        <div className="flex flex-col gap-4 border-b border-white/[0.06] p-4 sm:p-5">
+        <div className="flex flex-col gap-4 border-b border-white/6 p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full lg:max-w-md">
               <Search
@@ -220,7 +220,7 @@ export default function AdminTransactionsPage() {
               />
             </div>
 
-            <button className="flex w-fit items-center gap-2 rounded-xl border border-white/[0.07] px-4 py-2.5 text-xs text-zinc-400 transition hover:bg-white/[0.04] hover:text-white">
+            <button className="flex w-fit items-center gap-2 rounded-xl border border-white/7 px-4 py-2.5 text-xs text-zinc-400 transition hover:bg-white/4 hover:text-white">
               <SlidersHorizontal size={14} />
               More filters
             </button>
@@ -235,7 +235,7 @@ export default function AdminTransactionsPage() {
                 className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium transition ${
                   filter === item
                     ? "bg-[#f0b90b]/10 text-[#f0b90b]"
-                    : "text-zinc-500 hover:bg-white/[0.04] hover:text-white"
+                    : "text-zinc-500 hover:bg-white/4 hover:text-white"
                 }`}
               >
                 {item}
@@ -248,7 +248,7 @@ export default function AdminTransactionsPage() {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-white/6">
                 <Head>Transaction</Head>
                 <Head>User</Head>
                 <Head>Type</Head>
@@ -263,7 +263,7 @@ export default function AdminTransactionsPage() {
               {filteredTransactions.map((transaction) => (
                 <tr
                   key={transaction.id}
-                  className="border-b border-white/[0.04] transition hover:bg-white/[0.02]"
+                  className="border-b border-white/4 transition hover:bg-white/2"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">

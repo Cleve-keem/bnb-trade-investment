@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react";
 export default function DashboardPage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const { dashboard, isPending } = useUserDashboard();
+  const { dashboard, isPending, isError, error, refetch } = useUserDashboard();
 
   if (isPending) {
     return (
@@ -61,6 +61,10 @@ export default function DashboardPage() {
         </section>
         <RecentTransactions
           recentTransaction={dashboard?.recentTransactions ?? []}
+          isError={isError}
+          onRetry={refetch}
+          errorMessage={error?.message}
+          isLoading={isPending}
         />
       </div>
       <DepositModal open={depositOpen} onClose={() => setDepositOpen(false)} />

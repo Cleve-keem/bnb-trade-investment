@@ -1,6 +1,9 @@
 "use client";
 
 import DashboardShell from "@/components/bnb/layout/DashBoardShell";
+import EmptyTransactions from "@/components/bnb/Transaction/EmptyTransaction";
+import TransactionError from "@/components/bnb/Transaction/TransactionError";
+import TransactionTableSkeleton from "@/components/bnb/Transaction/TransactionTableSkeleton";
 import { useWalletTransactions } from "@/hooks/transaction";
 import { formatLongDate } from "@/libs/formatter/date";
 import { useState } from "react";
@@ -59,41 +62,53 @@ export default function TransactionsPage() {
               </thead>
 
               <tbody>
-                {filtered?.map((transaction) => {
-                  const date = new Date(transaction.created_at);
-                  const type = transaction?.transaction_type.includes("credit")
-                    ? "Credit"
-                    : "Debit";
-                  return (
-                    <tr
-                      key={transaction.id}
-                      className="border-b border-white/4 last:border-0"
-                    >
-                      <td className="px-5 py-5">
-                        <p className="text-sm font-medium">
-                          {transaction.description}
-                        </p>
-                        <p className="mt-1 text-[10px] text-zinc-600">
-                          {transaction.id}
-                        </p>
-                      </td>
-
-                      <td className="px-5 py-5 text-sm text-zinc-400">
-                        {type}
-                      </td>
-
-                      <td
-                        className={`px-5 py-5 text-sm font-medium ${
-                          transaction.amount > 0
-                            ? "text-emerald-400"
-                            : "text-white"
-                        }`}
+                {isPending ? (
+                  <TransactionTableSkeleton />
+                ) : isError ? (
+                  <TransactionError
+                    message={error?.message}
+                    onRetry={refetch}
+                  />
+                ) : filtered?.length === 0 ? (
+                  <EmptyTransactions filter={filter} />
+                ) : (
+                  filtered?.map((transaction) => {
+                    const date = new Date(transaction.created_at);
+                    const type = transaction?.transaction_type.includes(
+                      "credit",
+                    )
+                      ? "Credit"
+                      : "Debit";
+                    return (
+                      <tr
+                        key={transaction.id}
+                        className="border-b border-white/4 last:border-0"
                       >
-                        {transaction.amount > 0 ? "+" : "-"}$
-                        {Math.abs(transaction.amount).toLocaleString()}
-                      </td>
+                        <td className="px-5 py-5">
+                          <p className="text-sm font-medium">
+                            {transaction.description}
+                          </p>
+                          <p className="mt-1 text-[10px] text-zinc-600">
+                            {transaction.id}
+                          </p>
+                        </td>
 
-                      {/* <td className="px-5 py-5">
+                        <td className="px-5 py-5 text-sm text-zinc-400">
+                          {type}
+                        </td>
+
+                        <td
+                          className={`px-5 py-5 text-sm font-medium ${
+                            transaction.amount > 0
+                              ? "text-emerald-400"
+                              : "text-white"
+                          }`}
+                        >
+                          {transaction.amount > 0 ? "+" : "-"}$
+                          {Math.abs(transaction.amount).toLocaleString()}
+                        </td>
+
+                        {/* <td className="px-5 py-5">
                       <span
                         className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${
                           transaction.status === "Completed"
@@ -107,12 +122,13 @@ export default function TransactionsPage() {
                       </span>
                     </td> */}
 
-                      <td className="px-5 py-5 text-xs text-zinc-500">
-                        {formatLongDate(date)}
-                      </td>
-                    </tr>
-                  );
-                })}
+                        <td className="px-5 py-5 text-xs text-zinc-500">
+                          {formatLongDate(date)}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

@@ -2,6 +2,7 @@
 
 import { supabase } from "@/libs/supabase/browser";
 import UserService from "@/services/user.service";
+import { useAuthSession } from "./useAuthSession";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUserDashboard() {
@@ -12,7 +13,7 @@ export function useUserDashboard() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["user-dashboard"],
+    queryKey: ["user", "user-dashboard"],
 
     queryFn: async () => {
       const {
@@ -20,13 +21,8 @@ export function useUserDashboard() {
         error,
       } = await supabase.auth.getSession();
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (!session?.user) {
-        return null;
-      }
+      if (error) throw new Error(error.message);
+      if (!session?.user) return null;
 
       const { profile, error: profileError } =
         await UserService.fetchUserProfileById(session.user.id);
@@ -86,43 +82,82 @@ export function useUserDashboard() {
 }
 
 export function useUser() {
-  return useQuery({
-    queryKey: ["auth-user"],
+  const { userId, isLoading: isSessionLoading } = useAuthSession();
+
+  const query = useQuery({
+    queryKey: ["user", "profile", userId],
+
+    enabled: !isSessionLoading && !!userId,
+
     queryFn: async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-      if (error || !session?.user) return null;
+      if (!userId) return null;
 
       const { data: profile, error: profileError } = await supabase
         .from("users")
-        .select("email")
-        .eq("id", session.user.id)
+        .select(`id, email, full_name, role, status, avatar_url`)
+        .eq("id", userId)
         .single();
 
-      if (profileError) {
-        throw new Error("Failed to load user profile.");
-      }
+      if (profileError) throw new Error(profileError.message);
 
       return {
-        email: session.user.email,
+        id: profile.id,
+        email: profile.email,
+        fullname: profile.full_name ?? "User",
+        role: profile.role,
+        status: profile.status,
+        avatarUrl: profile.avatar_url,
       };
-
-      // return {
-      //   id: session.user.id,
-      //   email: session.user.email,
-      //   username: session.user.user_metadata?.username || "Investor",
-      //   firstName: session.user.user_metadata?.first_name || "",
-      //   lastName: session.user.user_metadata?.last_name || "",
-      //   phoneNumber: session.user.user_metadata?.phone_number || "",
-      //   is_email_verified: !!session.user.email_confirmed_at,
-      //   is_otp_verified: false,
-      //   user_role: profile.user_role,
-      //   is_suspended: profile.is_suspended,
-      // };
     },
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 60,
+
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
+
+  return {
+    ...query,
+    isPending: isSessionLoading || query.isPending,
+  };
 }
+
+// export function useUser() {
+//   return useQuery({
+//     queryKey: ["user", "auth-user"],
+
+//     queryFn: async () => {
+//       const {
+//         data: { session },
+//         error: sessionError,
+//       } = await supabase.auth.getSession();
+
+//       if (sessionError) throw new Error(sessionError.message);
+//       if (!session?.user) return null;
+
+//       const { data: profile, error: profileError } = await supabase
+//         .from("users")
+//         .select(`id, email, full_name, role, status, avatar_url`)
+//         .eq("id", session.user.id)
+//         .single();
+
+//       if (profileError) {
+//         throw new Error(profileError.message);
+//       }
+
+//       return {
+//         id: profile.id,
+//         email: profile.email ?? session.user.email,
+//         fullname: profile.full_name ?? "User",
+//         role: profile.role,
+//         status: profile.status,
+//         avatarUrl: profile.avatar_url,
+//       };
+//     },
+
+//     staleTime: 60 * 1000,
+//     gcTime: 5 * 60 * 1000,
+//     refetchOnMount: false,
+//     refetchOnWindowFocus: true,
+//   });
+// }
