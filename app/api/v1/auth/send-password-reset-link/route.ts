@@ -19,10 +19,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const { profileError, userProfile } =
-      await UserService.getUserByEmail(email);
+    const { profile, error: profileError } =
+      await UserService.fetchUserProfileByEmail(email);
 
-    if (profileError || !userProfile) {
+    if (profileError || !profile) {
       return NextResponse.json(
         { error: "No active profile matches this email address." },
         { status: 404 },
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const { error: dbError } = await supabase
       .from("email_verifications")
       .insert({
-        user_id: userProfile.id,
+        user_id: profile.id,
         token: verificationToken,
         expires_at: tokenExpiration.toISOString(),
       });
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
               </h2>
 
               <p style="color: #4b5563; line-height: 1.6;">
-                Hello ${userProfile.first_name || "Investor"},
+                Hello ${profile.full_name.split(" ")[0] || "Investor"},
               </p>
 
               <p style="color: #4b5563; line-height: 1.6;">

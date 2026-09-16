@@ -11,6 +11,16 @@ const UserService = {
     return { profile, error };
   },
 
+  async fetchUserProfileByEmail(email: string) {
+    const { data: profile, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    return { profile, error };
+  },
+
   async fetchUserWallet(userId: string) {
     const { data, error } = await supabase
       .from("wallets")
