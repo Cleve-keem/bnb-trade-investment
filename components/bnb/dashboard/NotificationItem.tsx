@@ -53,8 +53,8 @@ export default function NotificationItem({
 
   return (
     <div
-      className={`group relative w-full border-b border-white/[0.06] p-4 transition hover:bg-white/[0.03] ${
-        !notification.is_read ? "bg-white/[0.025]" : ""
+      className={`group relative w-full border-b border-white/6 p-4 transition hover:bg-white/3 ${
+        !notification.is_read ? "bg-white/2.5" : ""
       }`}
     >
       {/* Notification content */}
@@ -78,7 +78,7 @@ export default function NotificationItem({
                   ? "bg-emerald-500/10 text-emerald-400"
                   : notification.notification_type === "investment"
                     ? "bg-blue-500/10 text-blue-400"
-                    : "bg-white/[0.06] text-gray-400"
+                    : "bg-white/6 text-gray-400"
             }`}
           >
             {getNotificationIcon(notification.notification_type)}
