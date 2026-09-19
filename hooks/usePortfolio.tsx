@@ -1,5 +1,8 @@
 import { supabase } from "@/libs/supabase/browser";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthSession } from "./useAuthSession";
+import { useState } from "react";
+import portfolioService, { PortfolioRange } from "@/services/portfolio.service";
 
 export function usePortfolio() {
   const { data: portfolio, isLoading: loadingPortfolio } = useQuery({
@@ -32,4 +35,36 @@ export function usePortfolio() {
   });
 
   return { portfolio, loadingPortfolio };
+}
+
+export function usePortfolioChart() {
+  const { userId } = useAuthSession();
+  const [range, setRange] = useState<PortfolioRange>("1W");
+
+  const {
+    data: history = [],
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["portfolio", "history", userId, range],
+    enabled: !!userId,
+    queryFn: async () => {
+      if (!userId) return [];
+      const { history, error } = await portfolioService.fetchPortfolioHistory(
+        userId,
+        range,
+      );
+      if (error) throw new Error(error.message);
+      return history;
+    },
+    staleTime: 60_000,
+  });
+
+  return {
+    history,
+    isPending,
+    isError,
+    range,
+    setRange,
+  };
 }
