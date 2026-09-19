@@ -13,17 +13,17 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationPanel from "../dashboard/NotificationPanel2";
-import { useNotifications } from "@/hooks/useNotificatiton";
 import { useUser } from "@/hooks/user";
 import ProfileSkeleton from "../dashboard/ProfileSkeleton";
 import { useLogoutMutation } from "@/hooks/auth";
+import useNotifications from "@/hooks/useNotificatiton";
 
 type Props = {
   onMenu: () => void;
 };
 
 export default function DashboardHeader({ onMenu }: Props) {
-  const { hasNewNotifications, markNotificationsAsSeen } = useNotifications();
+  const { hasNewNotifications } = useNotifications();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -48,11 +48,7 @@ export default function DashboardHeader({ onMenu }: Props) {
   }, []);
 
   const handleNotificationClick = () => {
-    const nextState = !notificationsOpen;
-    setNotificationsOpen(nextState);
-    if (nextState) {
-      markNotificationsAsSeen();
-    }
+    setNotificationsOpen((current) => !current);
   };
 
   const userAvatar = user?.fullname?.trim()?.charAt(0).toUpperCase() ?? "U";

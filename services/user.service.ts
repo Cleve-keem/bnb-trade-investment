@@ -161,29 +161,6 @@ const UserService = {
       error,
     };
   },
-
-  async fetchUserNotifications(userId: string) {
-    const { data, error } = await supabase
-      .from("notifications")
-      .select(
-        `
-          id,
-          user_id,
-          title,
-          body,
-          notification_type,
-          is_read,
-          created_at
-        `,
-      )
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-
-    return {
-      notifications: data ?? [],
-      error,
-    };
-  },
 };
 
 export default UserService;

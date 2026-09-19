@@ -6,6 +6,7 @@ import TransactionError from "@/components/bnb/Transaction/TransactionError";
 import TransactionTableSkeleton from "@/components/bnb/Transaction/TransactionTableSkeleton";
 import { useWalletTransactions } from "@/hooks/transaction";
 import { formatLongDate } from "@/libs/formatter/date";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const filters = ["All", "Deposit", "Withdrawal", "Investment"];
@@ -14,8 +15,7 @@ export default function TransactionsPage() {
   const [filter, setFilter] = useState("All");
   const { wallet_transactions, isPending, isError, error, refetch } =
     useWalletTransactions();
-
-  console.log(wallet_transactions);
+  const router = useRouter();
 
   const filtered =
     filter === "All"
@@ -81,6 +81,9 @@ export default function TransactionsPage() {
                       : "Debit";
                     return (
                       <tr
+                        onClick={() =>
+                          router.push(`/transactions/${transaction.id}`)
+                        }
                         key={transaction.id}
                         className="border-b border-white/4 last:border-0"
                       >

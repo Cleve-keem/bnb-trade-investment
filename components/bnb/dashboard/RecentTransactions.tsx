@@ -4,6 +4,7 @@ import { formatLongDate } from "@/libs/formatter/date";
 import RecentTransactionsSkeleton from "../Transaction/RecentTransactionsSkeleton";
 import RecentTransactionsError from "../Transaction/RecentTransactionError";
 import RecentTransactionsEmpty from "../Transaction/RecentTransactionEmpty";
+import { useRouter } from "next/navigation";
 
 type RecentTransactionType = {
   id: string;
@@ -30,6 +31,7 @@ export default function RecentTransactions({
   onRetry,
 }: RecenttransactionsPropType) {
   const emptyTransaction = recentTransaction.length === 0;
+  const router = useRouter();
 
   return (
     <div className="rounded-2xl border border-white/6 bg-[#0d131a] p-5">
@@ -64,6 +66,8 @@ export default function RecentTransactions({
             return (
               <div
                 key={transaction.id}
+                role="button"
+                onClick={() => router.push(`/transactions/${transaction.id}`)}
                 className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/1.5 p-3"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/4">

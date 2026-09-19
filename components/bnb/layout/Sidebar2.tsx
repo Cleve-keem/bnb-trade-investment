@@ -18,6 +18,8 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { useUser } from "@/hooks/user";
+import ProfileSkeleton from "../dashboard/ProfileSkeleton";
 
 type Props = {
   mobileOpen: boolean;
@@ -70,6 +72,9 @@ const activityNavigation = [
 
 export default function Sidebar({ mobileOpen, onClose }: Props) {
   const pathname = usePathname();
+  const { data: user, isPending } = useUser();
+
+  const userAvatar = user?.fullname?.trim()?.charAt(0).toUpperCase() ?? "U";
 
   const navigation = (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -115,7 +120,7 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
             className={`mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition ${
               pathname === "/profile"
                 ? "bg-[#f0b90b]/10 text-[#f0b90b]"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
+                : "text-zinc-400 hover:bg-white/4 hover:text-white"
             }`}
           >
             <User size={18} />
@@ -129,7 +134,7 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
             className={`mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition ${
               pathname === "/settings"
                 ? "bg-[#f0b90b]/10 text-[#f0b90b]"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
+                : "text-zinc-400 hover:bg-white/4 hover:text-white"
             }`}
           >
             <Settings size={18} />
@@ -143,7 +148,7 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
             className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm transition ${
               pathname === "/help"
                 ? "bg-[#f0b90b]/10 text-[#f0b90b]"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
+                : "text-zinc-400 hover:bg-white/4 hover:text-white"
             }`}
           >
             <CircleHelp size={18} />
@@ -168,7 +173,7 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[260px] flex-col border-r border-white/[0.06] bg-[#0b1016] px-4 py-5 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-65 flex-col border-r border-white/6 bg-[#0b1016] px-4 py-5 transition-transform duration-300 lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -184,20 +189,27 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
 
         {navigation}
         {/* Bottom Account Card */}
-        <div className="mt-4 shrink-0">
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold">
-                B
-              </div>
-
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">Berry Ice</p>
-                <p className="truncate text-xs text-zinc-500">Tier 1 account</p>
+        {isPending ? (
+          <ProfileSkeleton />
+        ) : (
+          <div className="mt-4 shrink-0">
+            <div className="rounded-2xl border border-white/6 bg-white/2.5 p-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold">
+                  {userAvatar}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {user?.fullname}
+                  </p>
+                  <p className="truncate text-xs text-zinc-500">
+                    Tier 1 account
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </aside>
     </>
   );
@@ -236,7 +248,7 @@ function NavSection({
             className={`group mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition ${
               active
                 ? "bg-[#f0b90b]/10 font-medium text-[#f0b90b]"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
+                : "text-zinc-400 hover:bg-white/4 hover:text-white"
             }`}
           >
             <Icon size={18} />
