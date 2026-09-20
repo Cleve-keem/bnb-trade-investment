@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { resendService } from "@/constants";
-import UserService from "@/services/user.service";
+import userService from "@/services/user.service";
 import { cookies } from "next/headers";
 import { createClient } from "@/libs/supabase/server";
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
 
     const { profile, error: profileError } =
-      await UserService.fetchUserProfileByEmail(email);
+      await userService.fetchUserProfileByEmail(email);
 
     if (profileError || !profile) {
       return NextResponse.json(

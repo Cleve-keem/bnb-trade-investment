@@ -11,15 +11,12 @@
 --   • Validate investment requests
 -- =============================================================================
 
-
 -- =============================================================================
 -- Reference Sequence
 -- =============================================================================
 
 create sequence if not exists public.reference_seq;
-
 revoke all on sequence public.reference_seq from public;
-
 
 -- =============================================================================
 -- Generate Business Reference
@@ -82,7 +79,6 @@ revoke all on function public.get_setting(text) from public;
 grant execute on function public.get_setting(text)
 to service_role;
 -- grant execute on function public.get_setting(text) to authenticated, service_role;
-
 
 -- =============================================================================
 -- Get Numeric Setting

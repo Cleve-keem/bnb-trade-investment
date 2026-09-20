@@ -1,3 +1,5 @@
+"use client"
+
 import { supabase } from "@/libs/supabase/browser";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthSession } from "./useAuthSession";
@@ -35,7 +37,7 @@ export function usePortfolio() {
   });
 
   return { portfolio, loadingPortfolio };
-}
+} 
 
 export function usePortfolioChart() {
   const { userId } = useAuthSession();
@@ -66,5 +68,46 @@ export function usePortfolioChart() {
     isError,
     range,
     setRange,
+  };
+}
+
+export function usePortfolioSummary() {
+  const { userId } = useAuthSession();
+
+  const { data: summary } = useQuery({
+    queryKey: ["portfolio", "summary", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { summary, error } = await portfolioService.fetchSummary(userId!);
+      if (error) throw new Error(error.message);
+      return summary;
+    },
+    staleTime: 30_000,
+  });
+
+  const {
+    data: holdings = [],
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["portfolio", "holdings", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { holdings, error } = await portfolioService.fetchHoldings(userId!);
+      if (error) throw new Error(error.message);
+      return holdings;
+    },
+    staleTime: 30_000,
+  });
+
+  const fmt = (n: number) =>
+    n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+  return {
+    summary,
+    holdings,
+    isPending,
+    isError,
+    fmt,
   };
 }

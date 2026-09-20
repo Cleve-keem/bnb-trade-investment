@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 import { AuthService } from "@/services/auth.service";
-import UserService from "@/services/user.service";
+import userService from "@/services/user.service";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export function useLoginMutation() {
         return;
       }
       // fetch profile
-      const { profile, error } = await UserService.fetchUserProfileById(
+      const { profile, error } = await userService.fetchUserProfileById(
         user.id,
       );
 

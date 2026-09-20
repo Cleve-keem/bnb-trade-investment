@@ -1,6 +1,7 @@
 import { supabase } from "@/libs/supabase/browser";
+import { UserProfile } from "@/types/auth";
 
-const UserService = {
+const userService = {
   async fetchUserProfileById(userId: string) {
     const { data: profile, error } = await supabase
       .from("users")
@@ -161,6 +162,19 @@ const UserService = {
       error,
     };
   },
+  async updateProfile(input: {
+    fullName: string;
+    username: string;
+    phone: string;
+  }) {
+    const { data, error } = await supabase.rpc("update_own_profile", {
+      p_full_name: input.fullName,
+      p_username: input.username,
+      p_phone: input.phone,
+    });
+
+    return { profile: data as UserProfile | null, error };
+  },
 };
 
-export default UserService;
+export default userService;

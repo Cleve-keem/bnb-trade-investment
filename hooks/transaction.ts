@@ -1,6 +1,6 @@
 import { supabase } from "@/libs/supabase/browser";
 import transactionService from "@/services/transaction.service";
-import UserService from "@/services/user.service";
+import userService from "@/services/user.service";
 import { useQuery } from "@tanstack/react-query";
 import { Wallet } from "lucide-react";
 

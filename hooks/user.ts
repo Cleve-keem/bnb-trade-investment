@@ -1,9 +1,9 @@
 "use client";
 
 import { supabase } from "@/libs/supabase/browser";
-import UserService from "@/services/user.service";
+import userService from "@/services/user.service";
 import { useAuthSession } from "./useAuthSession";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useUserDashboard() {
   const {
@@ -25,12 +25,12 @@ export function useUserDashboard() {
       if (!session?.user) return null;
 
       const { profile, error: profileError } =
-        await UserService.fetchUserProfileById(session.user.id);
+        await userService.fetchUserProfileById(session.user.id);
 
       if (profileError) throw new Error(profileError.message);
       if (!profile) throw new Error("User profile not found.");
 
-      const { wallet, error: walletError } = await UserService.fetchUserWallet(
+      const { wallet, error: walletError } = await userService.fetchUserWallet(
         profile.id,
       );
 
@@ -41,8 +41,8 @@ export function useUserDashboard() {
         { walletTransactions, error: walletTransactionsError },
         { investments, error: investmentsError },
       ] = await Promise.all([
-        UserService.fetchUserWalletTransactions(wallet.id, 5),
-        UserService.fetchUserInvestments(profile.id),
+        userService.fetchUserWalletTransactions(wallet.id, 5),
+        userService.fetchUserInvestments(profile.id),
       ]);
 
       if (walletTransactionsError)
@@ -94,7 +94,9 @@ export function useUser() {
 
       const { data: profile, error: profileError } = await supabase
         .from("users")
-        .select(`id, email, full_name, role, status, avatar_url`)
+        .select(
+          `id, email, full_name, role, status, avatar_url, email_verified_at, phone, username`,
+        )
         .eq("id", userId)
         .single();
 
@@ -104,9 +106,12 @@ export function useUser() {
         id: profile.id,
         email: profile.email,
         fullname: profile.full_name ?? "User",
+        username: profile.username,
         role: profile.role,
         status: profile.status,
         avatarUrl: profile.avatar_url,
+        email_verified_at: profile.email_verified_at,
+        phone: profile.phone,
       };
     },
 
@@ -122,42 +127,45 @@ export function useUser() {
   };
 }
 
-// export function useUser() {
-//   return useQuery({
-//     queryKey: ["user", "auth-user"],
+export function useUserProfile() {
+  const { userId } = useAuthSession();
+  const queryKey = ["user", "profile", userId];
+  const queryClient = useQueryClient();
 
-//     queryFn: async () => {
-//       const {
-//         data: { session },
-//         error: sessionError,
-//       } = await supabase.auth.getSession();
+  const query = useQuery({
+    queryKey,
+    enabled: !!userId,
+    queryFn: async () => {
+      const { profile, error } = await userService.fetchUserProfileById(
+        userId!,
+      );
+      if (error) throw new Error(error.message);
+      return profile;
+    },
+    staleTime: 30_000,
+  });
 
-//       if (sessionError) throw new Error(sessionError.message);
-//       if (!session?.user) return null;
+  const updateMutation = useMutation({
+    mutationFn: async (input: {
+      fullName: string;
+      username: string;
+      phone: string;
+    }) => {
+      const { profile, error } = await userService.updateProfile(input);
+      if (error) throw new Error(error.message);
+      return profile;
+    },
+    onSuccess: (profile) => {
+      queryClient.setQueryData(queryKey, profile);
+    },
+  });
 
-//       const { data: profile, error: profileError } = await supabase
-//         .from("users")
-//         .select(`id, email, full_name, role, status, avatar_url`)
-//         .eq("id", session.user.id)
-//         .single();
-
-//       if (profileError) {
-//         throw new Error(profileError.message);
-//       }
-
-//       return {
-//         id: profile.id,
-//         email: profile.email ?? session.user.email,
-//         fullname: profile.full_name ?? "User",
-//         role: profile.role,
-//         status: profile.status,
-//         avatarUrl: profile.avatar_url,
-//       };
-//     },
-
-//     staleTime: 60 * 1000,
-//     gcTime: 5 * 60 * 1000,
-//     refetchOnMount: false,
-//     refetchOnWindowFocus: true,
-//   });
-// }
+  return {
+    profile: query.data,
+    isPending: query.isPending,
+    isError: query.isError,
+    updateProfile: updateMutation.mutateAsync,
+    isSaving: updateMutation.isPending,
+    saveError: updateMutation.error,
+  };
+}
