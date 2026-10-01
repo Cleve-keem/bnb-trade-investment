@@ -3,6 +3,7 @@ import transactionService from "@/services/transaction.service";
 import userService from "@/services/user.service";
 import { useQuery } from "@tanstack/react-query";
 import { Wallet } from "lucide-react";
+import { useAuthSession } from "./useAuthSession";
 
 export function useWalletTransactions() {
   const {
@@ -44,4 +45,29 @@ export function useWalletTransactions() {
     isError,
     refetch,
   };
+}
+
+export function useTransaction(transactionId: string) {
+  const { userId, isLoading: isSessionLoading } = useAuthSession();
+
+  return useQuery({
+    queryKey: ["transaction", userId, transactionId],
+
+    enabled: !isSessionLoading && !!userId && !!transactionId,
+
+    queryFn: async () => {
+      const { transaction, error } =
+        await transactionService.fetchTransactionById(transactionId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!transaction) {
+        throw new Error("Transaction not found.");
+      }
+
+      return transaction;
+    },
+  });
 }

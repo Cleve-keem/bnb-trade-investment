@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "coin-images.coingecko.com" },
     ],
   },
-  /* config options here */
+  allowedDevOrigins: ["172.20.10.5"],
 };
 
 export default nextConfig;

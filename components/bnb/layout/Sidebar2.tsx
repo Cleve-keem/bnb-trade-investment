@@ -11,15 +11,14 @@ import {
   ChevronRight,
   CircleHelp,
   LayoutDashboard,
-  // LogOut,
   Settings,
-  TrendingUp,
   User,
   Wallet,
   X,
 } from "lucide-react";
 import { useUser } from "@/hooks/user";
 import ProfileSkeleton from "../dashboard/ProfileSkeleton";
+import Image from "next/image";
 
 type Props = {
   mobileOpen: boolean;
@@ -37,11 +36,6 @@ const mainNavigation = [
     href: "/markets",
     icon: BarChart3,
   },
-  // {
-  //   label: "Trade",
-  //   href: "/trade",
-  //   icon: Activity,
-  // },
   {
     label: "Portfolio",
     href: "/portfolio",
@@ -55,11 +49,6 @@ const investNavigation = [
     href: "/investments",
     icon: Wallet,
   },
-  // {
-  //   label: "AI Signals",
-  //   href: "/ai-signals",
-  //   icon: TrendingUp,
-  // },
 ];
 
 const activityNavigation = [
@@ -73,7 +62,6 @@ const activityNavigation = [
 export default function Sidebar({ mobileOpen, onClose }: Props) {
   const pathname = usePathname();
   const { data: user, isPending } = useUser();
-
   const userAvatar = user?.fullname?.trim()?.charAt(0).toUpperCase() ?? "U";
 
   const navigation = (
@@ -85,10 +73,16 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
           onClick={onClose}
           className="flex items-center gap-3"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0b90b] font-black text-black">
-            B
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl font-black text-black">
+            <Image
+              src="/logo2.png"
+              alt="BNB Logo"
+              fill
+              className="object-contain"
+              priority
+              sizes="(max-width: 768px) 40px, 40px"
+            />
           </div>
-
           <div>
             <p className="text-xl font-bold tracking-tight">BNB</p>
             <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">
@@ -97,7 +91,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
           </div>
         </Link>
       </div>
-
       {/* Scrollable Navigation */}
       <div className="min-h-0 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
         <NavSection title="Overview" items={mainNavigation} onClose={onClose} />
@@ -107,7 +100,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
           items={activityNavigation}
           onClose={onClose}
         />
-
         {/* Account */}
         <div className="mt-8 pb-6">
           <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
@@ -126,7 +118,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
             <User size={18} />
             Profile
           </Link>
-
           {/* Settings */}
           <Link
             href="/settings"
@@ -140,7 +131,6 @@ export default function Sidebar({ mobileOpen, onClose }: Props) {
             <Settings size={18} />
             Settings
           </Link>
-
           {/* Help & Support */}
           <Link
             href="/help"
@@ -252,9 +242,7 @@ function NavSection({
             }`}
           >
             <Icon size={18} />
-
             <span>{item.label}</span>
-
             {active && (
               <ChevronRight size={14} className="ml-auto opacity-70" />
             )}

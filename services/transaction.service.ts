@@ -44,6 +44,34 @@ const transactionService = {
       error,
     };
   },
+
+  async fetchTransactionById(transactionId: string) {
+    const { data, error } = await supabase
+      .from("wallet_transactions")
+      .select(
+        `
+        id,
+        wallet_id,
+        investment_id,
+        transaction_type,
+        amount,
+        balance_before,
+        balance_after,
+        currency,
+        reference,
+        description,
+        metadata,
+        created_at
+      `,
+      )
+      .eq("id", transactionId)
+      .single();
+
+    return {
+      transaction: data,
+      error,
+    };
+  },
 };
 
 export default transactionService;

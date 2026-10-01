@@ -135,13 +135,13 @@ export default function ProfilePage() {
               />
             </div>
 
-            {saveError && (
+            {/* {saveError && (
               <p className="mt-4 text-sm text-red-400">
                 {saveError instanceof Error
                   ? saveError.message
                   : "Couldn't save changes."}
               </p>
-            )}
+            )} */}
 
             <button
               onClick={handleSave}

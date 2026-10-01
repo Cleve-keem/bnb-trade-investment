@@ -19,6 +19,7 @@ import {
   X,
   ShieldCheck,
 } from "lucide-react";
+import Image from "next/image";
 
 type Props = {
   mobileOpen: boolean;
@@ -102,8 +103,15 @@ export default function AdminSidebar({ mobileOpen, onClose }: Props) {
           onClick={onClose}
           className="flex items-center gap-3"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0b90b] font-black text-black">
-            B
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl font-black text-black">
+            <Image
+              src="/logo2.png"
+              alt="BNB Logo"
+              fill
+              className="object-contain"
+              priority
+              sizes="(max-width: 768px) 40px, 40px"
+            />
           </div>
 
           <div>

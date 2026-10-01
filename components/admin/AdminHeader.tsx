@@ -84,7 +84,7 @@ export default function AdminHeader({ onMenu }: Props) {
               onClick={() => setProfileOpen((current) => !current)}
               className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 p-1.5 pr-3 transition hover:bg-white/4"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0b90b] text-sm font-bold text-black">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f0b90b] text-sm font-bold text-black">
                 A
               </div>
 
