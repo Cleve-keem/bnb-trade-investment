@@ -24,9 +24,9 @@ export default function RecentActivity({
 
       <div className="space-y-1">
         {recentActivity.length > 1 ? (
-          recentActivity.map((activity: any) => (
+          recentActivity.map((activity: any, i: number) => (
             <div
-              key={`${activity.user}-${activity.time}`}
+              key={i}
               className="flex items-center gap-3 rounded-xl p-3 transition hover:bg-white/2.5"
             >
               <ActivityIcon type={activity.type} />
