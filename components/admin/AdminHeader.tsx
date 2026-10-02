@@ -1,11 +1,9 @@
 "use client";
 
-import { useLoginMutation } from "@/hooks/auth";
 import { supabase } from "@/libs/supabase/browser";
 import {
   Bell,
   Menu,
-  Search,
   ChevronDown,
   ShieldCheck,
   User,
@@ -58,19 +56,6 @@ export default function AdminHeader({ onMenu }: Props) {
         >
           <Menu size={20} />
         </button>
-        {/* Search */}
-        <div className="relative hidden w-full max-w-md sm:block">
-          <Search
-            size={17}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600"
-          />
-
-          <input
-            placeholder="Search users, transactions..."
-            className="h-10 w-full rounded-xl border border-white/6 bg-white/2.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-[#f0b90b]/40"
-          />
-        </div>
-
         <div className="ml-auto flex items-center gap-2">
           {/* Notifications */}
           <button className="relative rounded-xl border border-white/6 p-2.5 text-zinc-400 transition hover:text-white">
@@ -87,47 +72,20 @@ export default function AdminHeader({ onMenu }: Props) {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f0b90b] text-sm font-bold text-black">
                 A
               </div>
-
               <div className="hidden text-left sm:block">
                 <p className="text-xs font-medium text-white">Administrator</p>
-
                 <div className="flex items-center gap-1">
                   <ShieldCheck size={10} className="text-[#f0b90b]" />
                   <p className="text-[10px] text-zinc-500">Super Admin</p>
                 </div>
               </div>
-
               <ChevronDown
                 size={14}
                 className="hidden text-zinc-500 sm:block"
               />
             </button>
-
-            {/* {profileOpen && (
-              <div className="absolute right-0 top-14 w-56 overflow-hidden rounded-2xl border border-white/8 bg-[#11161d] p-2 shadow-2xl">
-                <div className="border-b border-white/6 px-3 py-3">
-                  <p className="text-sm font-medium text-white">
-                    Administrator
-                  </p>
-
-                  <p className="mt-0.5 text-xs text-zinc-500">Admin account</p>
-                </div>
-
-                <button className="mt-1 flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-white/4 hover:text-white">
-                  Profile
-                </button>
-
-                <button className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-white/4 hover:text-white">
-                  Settings
-                </button>
-
-                <button className="mt-1 flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10">
-                  Sign out
-                </button>
-              </div>
-            )} */}
             {profileOpen && (
-              <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-56 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#11161d] p-1.5 shadow-2xl shadow-black/40">
+              <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-56 overflow-hidden rounded-2xl border border-white/8 bg-[#11161d] p-1.5 shadow-2xl shadow-black/40">
                 {/* User info */}
                 <div className="border-b border-white/6 px-3 py-3">
                   <p className="text-sm font-medium text-white">
@@ -143,10 +101,9 @@ export default function AdminHeader({ onMenu }: Props) {
                     setProfileOpen(false);
                     router.push("/profile");
                   }}
-                  className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
+                  className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
                 >
                   <User size={17} />
-
                   <span>Profile</span>
                 </button>
 
@@ -157,23 +114,21 @@ export default function AdminHeader({ onMenu }: Props) {
                     setProfileOpen(false);
                     router.push("/settings");
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
                 >
                   <Settings size={17} />
-
                   <span>Settings</span>
                 </button>
 
                 {/* Logout */}
-                <div className="my-1 border-t border-white/[0.06]" />
+                <div className="my-1 border-t border-white/6" />
 
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-red-400 transition hover:bg-red-500/[0.07] hover:text-red-300"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-red-400 transition hover:bg-red-500/7 hover:text-red-300"
                 >
                   <LogOut size={17} />
-
                   <span>Logout</span>
                 </button>
               </div>

@@ -52,8 +52,6 @@ export function useAdminDashboard() {
         suspendedUsers,
         totalWalletBalance,
         totalInvestments,
-        // We don't currently have the required
-        // data to calculate these accurately.
         pendingWithdrawals: 0,
         depositsToday: 0,
         transactionsToday: 0,
@@ -517,3 +515,5 @@ export function useToggleSuspendMutation() {
 
 //   return toggleSuspendMutation;
 // }
+
+

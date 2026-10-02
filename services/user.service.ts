@@ -2,6 +2,15 @@ import { supabase } from "@/libs/supabase/browser";
 import { UserProfile } from "@/types/auth";
 
 const userService = {
+  async getUserProfiles() {
+    const { data: profiles, error } = await supabase
+      .from("users")
+      .select(`id, email, username, full_name, phone, role, status, created_at`)
+      .order("created_at", { ascending: false });
+
+    return { profiles, error };
+  },
+
   async fetchUserProfileById(userId: string) {
     const { data: profile, error } = await supabase
       .from("users")

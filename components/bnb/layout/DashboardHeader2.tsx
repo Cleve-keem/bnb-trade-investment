@@ -65,7 +65,7 @@ export default function DashboardHeader({ onMenu }: Props) {
           <Menu size={20} />
         </button>
         {/* Search */}
-        <div className="relative hidden w-full max-w-md sm:block">
+        {/* <div className="relative hidden w-full max-w-md sm:block">
           <Search
             size={17}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600"
@@ -74,7 +74,7 @@ export default function DashboardHeader({ onMenu }: Props) {
             placeholder="Search assets, markets..."
             className="h-10 w-full rounded-xl border border-white/6 bg-white/2.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-[#f0b90b]/40"
           />
-        </div>
+        </div> */}
         {/* Right side */}
         <div className="ml-auto flex items-center gap-2">
           {/* Notifications */}

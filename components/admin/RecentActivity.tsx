@@ -17,11 +17,10 @@ export default function RecentActivity({
           <p className="text-sm font-medium text-white">Recent Activity</p>
           <p className="mt-1 text-xs text-zinc-500">Latest platform activity</p>
         </div>
-        <button className="text-xs font-medium text-[#f0b90b] hover:underline">
+        {/* <button className="text-xs font-medium text-[#f0b90b] hover:underline">
           View all
-        </button>
+        </button> */}
       </div>
-
       <div className="space-y-1">
         {recentActivity.length > 1 ? (
           recentActivity.map((activity: any, i: number) => (
@@ -30,7 +29,6 @@ export default function RecentActivity({
               className="flex items-center gap-3 rounded-xl p-3 transition hover:bg-white/2.5"
             >
               <ActivityIcon type={activity.type} />
-
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-zinc-300">
                   <span className="font-medium text-white">
@@ -38,10 +36,8 @@ export default function RecentActivity({
                   </span>{" "}
                   {activity.description}
                 </p>
-
                 <p className="mt-0.5 text-xs text-zinc-600">{activity.time}</p>
               </div>
-
               <p className="text-sm font-medium text-white">
                 {activity.amount}
               </p>
