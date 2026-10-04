@@ -10,7 +10,7 @@ export default function WalletsEmptyState({
   if (hasActiveFilters) {
     return (
       <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.04] text-zinc-600">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/4 text-zinc-600">
           <SearchX size={22} />
         </div>
         <div>
@@ -23,7 +23,7 @@ export default function WalletsEmptyState({
         </div>
         <button
           onClick={onClearFilters}
-          className="mt-1 rounded-lg bg-white/[0.06] px-4 py-2 text-xs font-medium text-white hover:bg-white/[0.1]"
+          className="mt-1 rounded-lg bg-white/6 px-4 py-2 text-xs font-medium text-white hover:bg-white/10"
         >
           Clear filters
         </button>

@@ -79,7 +79,8 @@ export default function WithdrawModal({ open, onClose }: Props) {
             <h3 className="mt-5 text-lg font-semibold">Withdrawal submitted</h3>
 
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-zinc-500">
-              Your withdrawal request is now pending review. A confirmation link will be sent to elisaeve5628@gmail.com 
+              Your withdrawal request is now pending review. A confirmation link
+              will be sent to elisaeve5628@gmail.com
             </p>
 
             <button
@@ -125,7 +126,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={() => setStep("form")}
-                className="h-12 flex-1 rounded-xl border border-white/[0.08] text-sm font-medium"
+                className="h-12 flex-1 rounded-xl border border-white/8 text-sm font-medium"
               >
                 Back
               </button>
@@ -156,7 +157,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
                     setNetwork("Supported Network");
                   }
                 }}
-                className="h-12 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-sm outline-none"
+                className="h-12 w-full rounded-xl border border-white/8 bg-white/3 px-4 text-sm outline-none"
               >
                 <option className="bg-[#10161e]">Bitcoin</option>
                 <option className="bg-[#10161e]">Ethereum</option>
@@ -174,7 +175,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Enter wallet address"
-                className="h-12 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 font-mono text-xs outline-none placeholder:font-sans placeholder:text-zinc-600 focus:border-[#f0b90b]/50"
+                className="h-12 w-full rounded-xl border border-white/8 bg-white/3 px-4 font-mono text-xs outline-none placeholder:font-sans placeholder:text-zinc-600 focus:border-[#f0b90b]/50"
               />
             </div>
 
@@ -186,7 +187,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
               <select
                 value={network}
                 onChange={(e) => setNetwork(e.target.value)}
-                className="h-12 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-sm outline-none"
+                className="h-12 w-full rounded-xl border border-white/8 bg-white/3 px-4 text-sm outline-none"
               >
                 <option className="bg-[#10161e]">
                   {asset === "Bitcoin"
@@ -207,7 +208,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
                 </span>
               </div>
 
-              <div className="flex h-12 items-center rounded-xl border border-white/[0.08] bg-white/[0.03] px-4">
+              <div className="flex h-12 items-center rounded-xl border border-white/8 bg-white/3 px-4">
                 <span className="text-zinc-500">$</span>
 
                 <input
@@ -228,7 +229,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
               </div>
             </div>
 
-            <div className="rounded-xl border border-yellow-500/10 bg-yellow-500/5 p-3">
+            {/* <div className="rounded-xl border border-yellow-500/10 bg-yellow-500/5 p-3">
               <div className="flex gap-2">
                 <AlertTriangle
                   size={16}
@@ -240,7 +241,7 @@ export default function WithdrawModal({ open, onClose }: Props) {
                   submitting. This is a demo withdrawal flow.
                 </p>
               </div>
-            </div>
+            </div> */}
 
             <button
               onClick={review}

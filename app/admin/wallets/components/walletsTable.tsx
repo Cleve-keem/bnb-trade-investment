@@ -22,7 +22,7 @@ export default function WalletsTable({
     <div className="hidden overflow-x-auto lg:block">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-white/[0.06]">
+          <tr className="border-b border-white/6">
             <TableHead>User</TableHead>
             <TableHead>Wallet ID</TableHead>
             <TableHead>Total Balance</TableHead>
@@ -37,7 +37,7 @@ export default function WalletsTable({
           {wallets.map((wallet) => (
             <tr
               key={wallet.wallet_id}
-              className="border-b border-white/[0.04] transition hover:bg-white/[0.02]"
+              className="border-b border-white/4 transition hover:bg-white/2"
             >
               <td className="px-5 py-4">
                 <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export default function WalletsTable({
                 </span>
               </td>
               <td className="px-5 py-4">
-                <button className="rounded-lg p-2 text-zinc-500 hover:bg-white/[0.05] hover:text-white">
+                <button className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white">
                   <MoreHorizontal size={18} />
                 </button>
               </td>

@@ -13,13 +13,13 @@ function InfoBox({
   positive?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.05] bg-black/10 p-3">
+    <div className="rounded-xl border border-white/5 bg-black/10 p-3">
       <p className="text-[10px] uppercase tracking-wider text-zinc-600">
         {label}
       </p>
       <p
         className={`mt-1 text-sm font-medium ${positive ? "text-emerald-400" : "text-white"}`}
-      >
+      >-
         {value}
       </p>
     </div>
@@ -32,7 +32,7 @@ export default function WalletsMobileList({
   wallets: AdminWalletRow[];
 }) {
   return (
-    <div className="divide-y divide-white/[0.05] lg:hidden">
+    <div className="divide-y divide-white/5 lg:hidden">
       {wallets.map((wallet) => (
         <div key={wallet.wallet_id} className="p-4">
           <div className="flex items-center gap-3">
