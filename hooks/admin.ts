@@ -1,8 +1,13 @@
+import { transactionKeys } from "@/app/api/query-key";
+import { adminListTransactions, adminTransactionStats } from "@/app/api/v1/transaction/transaction";
 import adminService from "@/services/admin.service";
 import { AdminUser } from "@/types/admin";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TransactionType } from "@/types/transaction";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+
+export const ADMIN_TRANSACTIONS_PAGE_SIZE = 10;
 
 export function useAdminDashboard() {
   const {
@@ -199,6 +204,7 @@ export function useAdminUsersList() {
     refetch,
   };
 }
+
 /**
  * ============================================================
  * SINGLE ADMIN USER DETAILS
@@ -345,19 +351,6 @@ export function useAdminWalletAdjustmentMutation(userId: string) {
   };
 }
 
-/**
- * ============================================================
- * OLD BALANCE MUTATION
- * ============================================================
- *
- * Keep this temporarily if other existing admin UI imports it.
- *
- * DO NOT use this for the new user details page.
- *
- * It should eventually be removed because financial changes
- * should go through admin_adjust_wallet().
- */
-
 export function useUpdateBalanceMutation() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const queryClient = useQueryClient();
@@ -396,17 +389,6 @@ export function useUpdateBalanceMutation() {
   };
 }
 
-/**
- * ============================================================
- * OLD SUSPENSION MUTATION
- * ============================================================
- *
- * We intentionally don't directly update users.status here.
- *
- * We'll replace this with a secure RPC once the exact
- * suspension/activation function is implemented in Supabase.
- */
-
 export function useToggleSuspendMutation() {
   const queryClient = useQueryClient();
   const toggleSuspendMutation = useMutation({
@@ -442,6 +424,48 @@ export function useToggleSuspendMutation() {
   });
 
   return toggleSuspendMutation;
+}
+
+export function useAdminTransactions({
+  type,
+  search,
+  page,
+}: {
+  type: TransactionType | null;
+  search: string;
+  page: number;
+}) {
+  const params = {
+    type,
+    search: search.trim(),
+    limit: ADMIN_TRANSACTIONS_PAGE_SIZE,
+    offset: (page - 1) * ADMIN_TRANSACTIONS_PAGE_SIZE,
+  };
+
+  const query = useQuery({
+    queryKey: transactionKeys.adminList(params),
+    queryFn: () => adminListTransactions(params),
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
+  });
+
+  return {
+    rows: query.data?.rows ?? [],
+    total: query.data?.total ?? 0,
+    isPending: query.isPending,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
+  };
+}
+
+export function useAdminTransactionStats() {
+  return useQuery({
+    queryKey: transactionKeys.adminStats(),
+    queryFn: adminTransactionStats,
+    staleTime: 30_000,
+  });
 }
 
 // // 2. Mutation: Update User Balance & Yield

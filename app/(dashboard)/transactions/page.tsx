@@ -4,6 +4,7 @@ import DashboardShell from "@/components/bnb/layout/DashBoardShell";
 import EmptyTransactions from "@/components/bnb/Transaction/EmptyTransaction";
 import TransactionError from "@/components/bnb/Transaction/TransactionError";
 import TransactionTableSkeleton from "@/components/bnb/Transaction/TransactionTableSkeleton";
+import { TransactionTypeIcon } from "@/components/bnb/Transaction/TransactionTypeBadge";
 import { useWalletTransactions } from "@/hooks/transaction";
 import { formatLongDate } from "@/libs/formatter/date";
 import { useRouter } from "next/navigation";
