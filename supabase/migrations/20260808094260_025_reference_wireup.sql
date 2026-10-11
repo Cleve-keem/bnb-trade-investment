@@ -218,7 +218,7 @@ end if;
 if p_amount < v_plan.minimum_amount
 or (
     v_plan.maximum_amount is not null
-    and p_amount > v_plan.maximum_amount
+    and p_amount > v_plan.maximum_amount    
 ) then
     raise exception
         'create_investment: amount % outside plan bounds [%, %]',

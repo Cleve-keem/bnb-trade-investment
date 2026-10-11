@@ -39,14 +39,14 @@ export default function WithdrawalDetailsModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div
         onMouseDown={(e) => e.stopPropagation()}
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/[0.08] bg-[#0d131a] shadow-2xl"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/8 bg-[#0d131a] shadow-2xl"
       >
-        <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4 sm:px-6">
+        <div className="flex items-center justify-between border-b border-white/6 px-5 py-4 sm:px-6">
           <div>
             <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600">
               Withdrawal Request
@@ -58,14 +58,14 @@ export default function WithdrawalDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
+            className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
           >
             <X size={19} />
           </button>
         </div>
 
         <div className="space-y-5 p-5 sm:p-6">
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <div className="rounded-xl border border-white/6 bg-white/2 p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f0b90b] text-sm font-bold text-black">
                 {(withdrawal.full_name ?? withdrawal.email)
@@ -83,7 +83,7 @@ export default function WithdrawalDetailsModal({
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#f0b90b]/15 bg-[#f0b90b]/[0.025] p-4">
+          <div className="rounded-xl border border-[#f0b90b]/15 bg-[#f0b90b]/2.5 p-4">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs text-zinc-600">Requested Amount</p>
@@ -129,7 +129,7 @@ export default function WithdrawalDetailsModal({
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-zinc-600">
                 Destination
               </p>
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div className="rounded-xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-zinc-600">
@@ -141,7 +141,7 @@ export default function WithdrawalDetailsModal({
                   </div>
                   <button
                     onClick={copyAddress}
-                    className="shrink-0 rounded-lg border border-white/[0.06] p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
+                    className="shrink-0 rounded-lg border border-white/6 p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
                   >
                     {copied ? (
                       <Check size={15} className="text-emerald-400" />
@@ -159,7 +159,7 @@ export default function WithdrawalDetailsModal({
               Timeline
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.015] p-3">
+              <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/1.5 p-3">
                 <Clock3 size={15} className="shrink-0 text-zinc-500" />
                 <div className="min-w-0">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-600">
@@ -170,7 +170,7 @@ export default function WithdrawalDetailsModal({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.015] p-3">
+              <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/1.5 p-3">
                 <ShieldCheck size={15} className="shrink-0 text-zinc-500" />
                 <div className="min-w-0">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-600">
@@ -196,7 +196,7 @@ export default function WithdrawalDetailsModal({
           )}
 
           {withdrawal.status === "pending" && (
-            <div className="rounded-xl border border-[#f0b90b]/10 bg-[#f0b90b]/[0.025] p-4">
+            <div className="rounded-xl border border-[#f0b90b]/10 bg-[#f0b90b]/2.5 p-4">
               <div className="flex items-start gap-3">
                 <ShieldCheck
                   size={18}
@@ -227,7 +227,7 @@ export default function WithdrawalDetailsModal({
           )}
 
           {withdrawal.status === "approved" && (
-            <div className="rounded-xl border border-blue-500/10 bg-blue-500/[0.025] p-4">
+            <div className="rounded-xl border border-blue-500/10 bg-blue-500/2.5 p-4">
               <div className="flex items-start gap-3">
                 <ShieldCheck
                   size={18}

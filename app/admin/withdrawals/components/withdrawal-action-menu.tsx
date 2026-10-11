@@ -24,14 +24,14 @@ export default function WithdrawalActionsMenu({
     <div className="relative flex justify-end gap-1">
       <button
         onClick={onView}
-        className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
+        className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
         title="View details"
       >
         <Eye size={17} />
       </button>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
+        className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
       >
         <MoreHorizontal size={18} />
       </button>
@@ -43,13 +43,13 @@ export default function WithdrawalActionsMenu({
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-10 z-30 w-48 overflow-hidden rounded-xl border border-white/[0.08] bg-[#11171f] p-1.5 shadow-2xl">
+          <div className="absolute right-0 top-10 z-30 w-48 overflow-hidden rounded-xl border border-white/8 bg-[#11171f] p-1.5 shadow-2xl">
             <button
               onClick={() => {
                 onView();
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-zinc-300 transition hover:bg-white/[0.05] hover:text-white"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
             >
               <Eye size={15} /> View Details
             </button>

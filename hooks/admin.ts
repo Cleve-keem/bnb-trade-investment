@@ -1,7 +1,9 @@
 import { transactionKeys } from "@/app/api/query-key";
 import { adminListTransactions, adminTransactionStats } from "@/app/api/v1/transaction/transaction";
 import adminService from "@/services/admin.service";
+import plansService from "@/services/investment-plan.service";
 import { AdminUser } from "@/types/admin";
+import { PlanInput, PlanStatus } from "@/types/plan";
 import { TransactionType } from "@/types/transaction";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -466,6 +468,91 @@ export function useAdminTransactionStats() {
     queryFn: adminTransactionStats,
     staleTime: 30_000,
   });
+}
+
+export const planKeys = {
+  all: ["plans"] as const,
+  adminList: () => [...planKeys.all, "admin", "list"] as const,
+};
+
+export function useAdminPlans() {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: planKeys.adminList(),
+    queryFn: () => plansService.list(),
+    staleTime: 15_000,
+  });
+
+  const refresh = () =>
+    queryClient.invalidateQueries({ queryKey: planKeys.all });
+  const onError = (err: Error) =>
+    toast.error(err.message || "Something went wrong.");
+
+  const createMutation = useMutation({
+    mutationFn: ({ input, status }: { input: PlanInput; status: PlanStatus }) =>
+      plansService.create(input, status),
+    onSuccess: () => {
+      toast.success("Plan created.");
+      refresh();
+    },
+    onError,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, input }: { id: string; input: PlanInput }) =>
+      plansService.update(id, input),
+    onSuccess: () => {
+      toast.success(
+        "Plan updated. Existing investments keep their original terms.",
+      );
+      refresh();
+    },
+    onError,
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: PlanStatus }) =>
+      plansService.setStatus(id, status),
+    onSuccess: (_, { status }) => {
+      toast.success(
+        status === "active"
+          ? "Plan is now accepting investments."
+          : status === "inactive"
+            ? "Plan paused. It no longer accepts new investments."
+            : "Plan archived.",
+      );
+      refresh();
+    },
+    onError,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => plansService.remove(id),
+    onSuccess: () => {
+      toast.success("Plan deleted.");
+      refresh();
+    },
+    onError,
+  });
+
+  return {
+    plans: query.data ?? [],
+    isPending: query.isPending,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
+    createPlan: createMutation.mutateAsync,
+    updatePlan: updateMutation.mutateAsync,
+    setPlanStatus: statusMutation.mutateAsync,
+    deletePlan: deleteMutation.mutateAsync,
+    isSaving: createMutation.isPending || updateMutation.isPending,
+    isBusy:
+      createMutation.isPending ||
+      updateMutation.isPending ||
+      statusMutation.isPending ||
+      deleteMutation.isPending,
+  };
 }
 
 // // 2. Mutation: Update User Balance & Yield
