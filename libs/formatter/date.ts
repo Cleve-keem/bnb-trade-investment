@@ -40,3 +40,12 @@ export function formatDateTime(isoDate: string): string {
     minute: "2-digit",
   }).format(new Date(isoDate));
 }
+
+export const formatDate = (value: string | null) =>
+  value
+    ? new Date(value).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "—";
