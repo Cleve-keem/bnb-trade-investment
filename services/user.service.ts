@@ -177,9 +177,9 @@ const userService = {
     phone: string;
   }) {
     const { data, error } = await supabase.rpc("update_own_profile", {
-      p_full_name: input.fullName,
-      p_username: input.username,
-      p_phone: input.phone,
+      p_full_name: input.fullName.trim() || null,
+      p_username: input.username.trim() || null,
+      p_phone: input.phone.trim() || null,
     });
 
     return { profile: data as UserProfile | null, error };

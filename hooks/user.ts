@@ -5,6 +5,30 @@ import userService from "@/services/user.service";
 import { useAuthSession } from "./useAuthSession";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+const profileKey = (userId: string | null) =>
+  ["user", "profile", userId] as const;
+
+function mapProfile(row: any) {
+  return {
+    id: row.id,
+    email: row.email,
+    fullname: row.full_name ?? "User",
+    fullNameRaw: row.full_name ?? "",
+    username: row.username,
+    role: row.role,
+    status: row.status,
+    avatarUrl: row.avatar_url,
+    email_verified_at: row.email_verified_at,
+    phone: row.phone,
+  };
+}
+
+async function fetchProfile(userId: string) {
+  const { profile, error } = await userService.fetchUserProfileById(userId);
+  if (error) throw new Error(error.message);
+  return mapProfile(profile);
+}
+
 export function useUserDashboard() {
   const {
     data: dashboard,
@@ -61,10 +85,9 @@ export function useUserDashboard() {
         );
 
       const totalPortfolio = Number(wallet.balance ?? 0) + investedAmount;
-      const totalReturn = investments.reduce(
-        (total, investment) => total + Number(investment.expected_profit ?? 0),
-        0,
-      );
+      const totalReturn = investments
+        .filter((i) => i.status !== "cancelled")
+        .reduce((total, i) => total + Number(i.expected_profit ?? 0), 0);
 
       const recentTransactions = walletTransactions.slice(0, 5);
 
@@ -85,63 +108,24 @@ export function useUser() {
   const { userId, isLoading: isSessionLoading } = useAuthSession();
 
   const query = useQuery({
-    queryKey: ["user", "profile", userId],
-
+    queryKey: profileKey(userId),
     enabled: !isSessionLoading && !!userId,
-
-    queryFn: async () => {
-      if (!userId) return null;
-
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select(
-          `id, email, full_name, role, status, avatar_url, email_verified_at, phone, username`,
-        )
-        .eq("id", userId)
-        .single();
-
-      if (profileError) throw new Error(profileError.message);
-
-      return {
-        id: profile.id,
-        email: profile.email,
-        fullname: profile.full_name ?? "User",
-        username: profile.username,
-        role: profile.role,
-        status: profile.status,
-        avatarUrl: profile.avatar_url,
-        email_verified_at: profile.email_verified_at,
-        phone: profile.phone,
-      };
-    },
-
+    queryFn: () => fetchProfile(userId!),
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
   });
 
-  return {
-    ...query,
-    isPending: isSessionLoading || query.isPending,
-  };
+  return { ...query, isPending: isSessionLoading || query.isPending };
 }
 
 export function useUserProfile() {
   const { userId } = useAuthSession();
-  const queryKey = ["user", "profile", userId];
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey,
+    queryKey: profileKey(userId),
     enabled: !!userId,
-    queryFn: async () => {
-      const { profile, error } = await userService.fetchUserProfileById(
-        userId!,
-      );
-      if (error) throw new Error(error.message);
-      return profile;
-    },
+    queryFn: () => fetchProfile(userId!),
     staleTime: 30_000,
   });
 
@@ -151,12 +135,11 @@ export function useUserProfile() {
       username: string;
       phone: string;
     }) => {
-      const { profile, error } = await userService.updateProfile(input);
+      const { error } = await userService.updateProfile(input);
       if (error) throw new Error(error.message);
-      return profile;
     },
-    onSuccess: (profile) => {
-      queryClient.setQueryData(queryKey, profile);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 

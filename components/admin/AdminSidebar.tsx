@@ -186,19 +186,18 @@ export default function AdminSidebar({ mobileOpen, onClose }: Props) {
           </Link>
 
           <Link
-            href="/help"
+            href="/admin/support"
             onClick={onClose}
             className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-zinc-500 transition hover:bg-white/[0.035] hover:text-white"
           >
             <CircleHelp size={18} />
-
             <span>Help & Support</span>
           </Link>
         </div>
       </div>
 
       {/* Admin account */}
-      <div className="mt-4 shrink-0 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3">
+      <div className="mt-4 shrink-0 rounded-2xl border border-white/6 bg-white/2.5 p-3">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f0b90b] text-sm font-bold text-black">
             A

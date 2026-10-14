@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function SupportCenter() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -38,7 +39,7 @@ export default function SupportCenter() {
         </div>
 
         {/* Contact hero */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-blue-500/[0.12] via-white/[0.03] to-purple-500/[0.08] p-6 md:p-8">
+        <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/8 bg-linear-to-br from-blue-500/1.2 via-white/3 to-purple-500/8 p-6 md:p-8">
           <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[#f0b90b]/10 blur-3xl" />
 
           <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
@@ -55,19 +56,16 @@ export default function SupportCenter() {
               </p>
 
               <div className="mt-5 flex flex-wrap items-center gap-3">
-                {/* <a
-                  href="https://wa.me/2348000000000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-400"
+                <Link
+                  href="/help/chat"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#f0b90b] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-110"
                 >
                   <MessageCircle size={17} />
-                  Chat with Support
-                </a> */}
-
+                  Start live chat
+                </Link>
                 <a
                   href="sms:+19039174548"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07] hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/8 bg-white/4 px-5 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07] hover:text-white"
                 >
                   {/* <Phone size={16} /> */}
                   <MessageCircle size={23} />
@@ -76,7 +74,7 @@ export default function SupportCenter() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-5 md:min-w-[220px]">
+            <div className="rounded-2xl border border-white/8 bg-black/20 p-5 md:min-w-55">
               <div className="flex items-center gap-2 text-sm font-medium text-white">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 Support available
@@ -124,19 +122,19 @@ export default function SupportCenter() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02]">
+          <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/2">
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
 
               return (
                 <div
                   key={faq.question}
-                  className="border-b border-white/[0.06] last:border-b-0"
+                  className="border-b border-white/6 last:border-b-0"
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition hover:bg-white/[0.025]"
+                    className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition hover:bg-white/2.5"
                   >
                     <span className="text-sm font-medium text-gray-200">
                       {faq.question}
@@ -188,8 +186,8 @@ function SupportCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 transition hover:border-white/[0.12] hover:bg-white/[0.035]">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] text-[#f0b90b]">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/2 p-5 transition hover:border-white/1.2 hover:bg-white/[0.035]">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-[#f0b90b]">
         {icon}
       </div>
 

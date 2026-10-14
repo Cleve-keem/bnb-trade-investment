@@ -23,12 +23,12 @@ export default function ProfilePage() {
   useEffect(() => {
     if (profile) {
       setForm({
-        fullName: profile.fullname ?? "",
+        fullName: profile.fullNameRaw,
         username: profile.username ?? "",
         phone: profile.phone ?? "",
       });
     }
-  }, [profile]);
+  }, [profile?.fullNameRaw, profile?.username, profile?.phone]);
 
   async function handleSave() {
     try {
