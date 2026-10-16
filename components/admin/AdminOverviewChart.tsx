@@ -21,14 +21,14 @@ const data = [
 
 export default function AdminOverviewChart() {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5">
+    <div className="rounded-2xl border border-white/6 bg-white/2.5 p-5">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-white">Platform Overview</p>
           <p className="mt-1 text-xs text-zinc-500">Total investment volume</p>
         </div>
 
-        <select className="rounded-lg border border-white/[0.06] bg-[#11161d] px-3 py-2 text-xs text-zinc-400 outline-none">
+        <select className="rounded-lg border border-white/6 bg-[#11161d] px-3 py-2 text-xs text-zinc-400 outline-none">
           <option>7 months</option>
           <option>30 days</option>
           <option>12 months</option>

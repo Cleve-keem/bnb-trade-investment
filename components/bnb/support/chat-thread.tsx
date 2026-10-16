@@ -66,10 +66,10 @@ export default function ChatThread({
                 className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                   mine
                     ? "rounded-br-md bg-[#f0b90b] text-black"
-                    : "rounded-bl-md border border-white/[0.06] bg-white/[0.04] text-zinc-200"
+                    : "rounded-bl-md border border-white/6 bg-white/4 text-zinc-200"
                 }`}
               >
-                <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                <p className="whitespace-pre-wrap wrap-break-word">{m.body}</p>
                 <p
                   className={`mt-1 text-[10px] ${mine ? "text-black/60" : "text-zinc-600"}`}
                 >
@@ -82,7 +82,7 @@ export default function ChatThread({
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-white/[0.06] p-3">
+      <div className="border-t border-white/6 p-3">
         {error && <p className="mb-2 text-xs text-red-400">{error}</p>}
         <div className="flex items-end gap-2">
           <textarea
@@ -97,7 +97,7 @@ export default function ChatThread({
             rows={1}
             maxLength={2000}
             placeholder="Type your message…"
-            className="max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-[#f0b90b]/40"
+            className="max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-white/8 bg-white/3 px-4 py-3 text-sm outline-none focus:border-[#f0b90b]/40"
           />
           <button
             onClick={submit}

@@ -227,7 +227,7 @@ export default function AdminSidebar({ mobileOpen, onClose }: Props) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[260px] flex-col border-r border-white/[0.06] bg-[#0b1016] px-4 py-5 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-65 flex-col border-r border-white/6 bg-[#0b1016] px-4 py-5 transition-transform duration-300 lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -289,7 +289,6 @@ function NavSection({
             >
               <div className="flex items-center gap-3">
                 <Icon size={18} />
-
                 <span>{item.label}</span>
               </div>
 

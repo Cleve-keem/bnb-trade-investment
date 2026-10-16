@@ -47,8 +47,8 @@ export default function AdminSupportPage() {
               <button
                 key={c.conversation_id}
                 onClick={() => setSelectedId(c.conversation_id)}
-                className={`flex w-full items-start gap-3 border-b border-white/[0.04] p-4 text-left transition hover:bg-white/[0.03] ${
-                  selectedId === c.conversation_id ? "bg-white/[0.05]" : ""
+                className={`flex w-full items-start gap-3 border-b border-white/4 p-4 text-left transition hover:bg-white/3 ${
+                  selectedId === c.conversation_id ? "bg-white/5" : ""
                 }`}
               >
                 <div className="min-w-0 flex-1">
@@ -83,7 +83,7 @@ export default function AdminSupportPage() {
               </p>
             ) : (
               <>
-                <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
+                <div className="flex items-center justify-between border-b border-white/6 px-5 py-4">
                   <div>
                     <p className="text-sm font-semibold">
                       {selected.full_name ?? selected.email}
@@ -98,7 +98,7 @@ export default function AdminSupportPage() {
                         selected.status === "open" ? "closed" : "open",
                       )
                     }
-                    className="rounded-xl border border-white/[0.08] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.05]"
+                    className="rounded-xl border border-white/8 px-3 py-2 text-xs text-zinc-300 hover:bg-white/5"
                   >
                     {selected.status === "open" ? "Mark resolved" : "Reopen"}
                   </button>

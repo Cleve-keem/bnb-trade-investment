@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { AuthService } from "@/services/auth.service";
 import userService from "@/services/user.service";
+import { isAdminRole, safeRedirect } from "@/libs/auth/routes";
+import { markManualLogout } from "@/libs/auth/session-flags";
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -20,28 +22,42 @@ export function useLoginMutation() {
       toast.dismiss(contextToastId);
 
       const user = data.user;
-      console.log("user", user);
       if (!user) {
         toast.error("Unable to authenticate user!");
         return;
       }
-      // fetch profile
+
       const { profile, error } = await userService.fetchUserProfileById(
         user.id,
       );
 
       if (error || !profile) {
-        toast.error("Unable to load profile account");
-        return;
-      }
-      // Admin
-      if (profile.role === "admin") {
-        toast.success("Welcome back!");
-        router.push("/admin");
+        await AuthService.logout().catch(() => {});
+        toast.error("Unable to load your account. Please try again.");
         return;
       }
 
-      if (profile?.first_login) {
+      // Suspended or deleted accounts can't sign in
+      if (profile.status !== "active") {
+        await AuthService.logout().catch(() => {});
+        toast.error("This account is not active. Please contact support.");
+        return;
+      }
+
+      // Where they were trying to go before being sent to login
+      const wanted = new URLSearchParams(window.location.search).get(
+        "redirect",
+      );
+
+      // admin AND super_admin
+      if (isAdminRole(profile.role)) {
+        toast.success("Welcome back!");
+        router.replace(safeRedirect(wanted, profile.role));
+        router.refresh();
+        return;
+      }
+
+      if (profile.first_login) {
         try {
           await AuthService.prepareFirstLoginOtp();
           toast.success("Verification code sent to your email.");
@@ -49,19 +65,67 @@ export function useLoginMutation() {
             `/verify-otp?email=${encodeURIComponent(variables.email)}`,
           );
           return;
-        } catch (error: any) {
+        } catch (err) {
           toast.error(
-            error instanceof Error
-              ? error.message
+            err instanceof Error
+              ? err.message
               : "Unable to send verification code.",
           );
           return;
         }
       }
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      toast.success(`Welcome back!`);
-      router.push("/dashboard");
+
+      toast.success("Welcome back!");
+      router.replace(safeRedirect(wanted, profile.role));
+      router.refresh();
     },
+
+    // onSuccess: async (data, variables, contextToastId) => {
+    //   toast.dismiss(contextToastId);
+
+    //   const user = data.user;
+    //   console.log("user", user);
+    //   if (!user) {
+    //     toast.error("Unable to authenticate user!");
+    //     return;
+    //   }
+    //   // fetch profile
+    //   const { profile, error } = await userService.fetchUserProfileById(
+    //     user.id,
+    //   );
+
+    //   if (error || !profile) {
+    //     toast.error("Unable to load profile account");
+    //     return;
+    //   }
+    //   // Admin
+    //   if (profile.role === "admin") {
+    //     toast.success("Welcome back!");
+    //     router.push("/admin");
+    //     return;
+    //   }
+
+    //   if (profile?.first_login) {
+    //     try {
+    //       await AuthService.prepareFirstLoginOtp();
+    //       toast.success("Verification code sent to your email.");
+    //       router.push(
+    //         `/verify-otp?email=${encodeURIComponent(variables.email)}`,
+    //       );
+    //       return;
+    //     } catch (error: any) {
+    //       toast.error(
+    //         error instanceof Error
+    //           ? error.message
+    //           : "Unable to send verification code.",
+    //       );
+    //       return;
+    //     }
+    //   }
+    //   queryClient.invalidateQueries({ queryKey: ["user"] });
+    //   toast.success(`Welcome back!`);
+    //   router.push("/dashboard");
+    // },
 
     onError(error, variables, contextToastId) {
       toast.dismiss(contextToastId);
@@ -163,19 +227,31 @@ export function useLogoutMutation() {
     mutationFn: AuthService.logout,
 
     onMutate: () => {
+      markManualLogout();
       return toast.loading("Logging out...");
     },
 
     onSuccess: (_, __, toastId) => {
-      toast.success("Logged out successfully", {
-        id: toastId,
-      });
-
-      queryClient.removeQueries({ queryKey: ["user"] });
-      queryClient.removeQueries({ queryKey: ["user-dashboard"] });
+      toast.success("Logged out successfully", { id: toastId });
+      queryClient.clear(); // everything, not just ["user"]
       router.replace("/login");
       router.refresh();
     },
+
+    // onMutate: () => {
+    //   return toast.loading("Logging out...");
+    // },
+
+    // onSuccess: (_, __, toastId) => {
+    //   toast.success("Logged out successfully", {
+    //     id: toastId,
+    //   });
+
+    //   queryClient.removeQueries({ queryKey: ["user"] });
+    //   queryClient.removeQueries({ queryKey: ["user-dashboard"] });
+    //   router.replace("/login");
+    //   router.refresh();
+    // },
 
     onError: (_, __, toastId) => {
       toast.error("Unable to log out. Please try again.", {
