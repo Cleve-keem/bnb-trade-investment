@@ -17,95 +17,100 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AdminNotification,
+  Audience,
+  NotificationStatus,
+  NotificationType,
+} from "@/types/admin";
+import { useAdminNotifications } from "@/hooks/admin";
 
-type NotificationType = "System" | "Security" | "Transaction" | "Promotion";
+// type NotificationType = "System" | "Security" | "Transaction" | "Promotion"
+// type NotificationStatus = "Sent" | "Scheduled" | "Draft"
+// type Audience = "All Users" | "Active Users" | "Admins";
 
-type NotificationStatus = "Sent" | "Scheduled" | "Draft";
+// type AdminNotification = {
+//   id: string;
+//   title: string;
+//   message: string;
+//   type: NotificationType;
+//   audience: Audience;
+//   status: NotificationStatus;
+//   createdAt: string;
+//   sentAt?: string;
+//   recipients: number;
+// };
 
-type Audience = "All Users" | "Active Users" | "Admins";
-
-type AdminNotification = {
-  id: string;
-  title: string;
-  message: string;
-  type: NotificationType;
-  audience: Audience;
-  status: NotificationStatus;
-  createdAt: string;
-  sentAt?: string;
-  recipients: number;
-};
-
-const initialNotifications: AdminNotification[] = [
-  {
-    id: "NOT-10021",
-    title: "Scheduled Maintenance",
-    message:
-      "The platform will undergo scheduled maintenance. Some features may be temporarily unavailable.",
-    type: "System",
-    audience: "All Users",
-    status: "Sent",
-    createdAt: "Sep 3, 2026 08:30 AM",
-    sentAt: "Sep 3, 2026 08:35 AM",
-    recipients: 1248,
-  },
-  {
-    id: "NOT-10020",
-    title: "Security Reminder",
-    message:
-      "Please review your account security settings and ensure your account information is up to date.",
-    type: "Security",
-    audience: "Active Users",
-    status: "Sent",
-    createdAt: "Sep 2, 2026 03:20 PM",
-    sentAt: "Sep 2, 2026 03:25 PM",
-    recipients: 892,
-  },
-  {
-    id: "NOT-10019",
-    title: "Withdrawal Processing Update",
-    message:
-      "Withdrawal processing times have been updated. Please review the latest platform information.",
-    type: "Transaction",
-    audience: "All Users",
-    status: "Sent",
-    createdAt: "Sep 2, 2026 10:15 AM",
-    sentAt: "Sep 2, 2026 10:20 AM",
-    recipients: 1248,
-  },
-  {
-    id: "NOT-10018",
-    title: "Platform Update",
-    message:
-      "A new platform update is now available with improvements and performance enhancements.",
-    type: "System",
-    audience: "All Users",
-    status: "Sent",
-    createdAt: "Sep 1, 2026 01:45 PM",
-    sentAt: "Sep 1, 2026 01:50 PM",
-    recipients: 1248,
-  },
-  {
-    id: "NOT-10017",
-    title: "Admin Meeting Reminder",
-    message: "Reminder for the upcoming administrative review meeting.",
-    type: "System",
-    audience: "Admins",
-    status: "Scheduled",
-    createdAt: "Sep 1, 2026 09:00 AM",
-    recipients: 8,
-  },
-  {
-    id: "NOT-10016",
-    title: "Welcome Message",
-    message: "Welcome to BNB. Your account is ready to explore the platform.",
-    type: "Promotion",
-    audience: "Active Users",
-    status: "Draft",
-    createdAt: "Aug 31, 2026 04:30 PM",
-    recipients: 892,
-  },
-];
+// const initialNotifications: AdminNotification[] = [
+//   {
+//     id: "NOT-10021",
+//     title: "Scheduled Maintenance",
+//     message:
+//       "The platform will undergo scheduled maintenance. Some features may be temporarily unavailable.",
+//     type: "System",
+//     audience: "All Users",
+//     status: "Sent",
+//     createdAt: "Sep 3, 2026 08:30 AM",
+//     sentAt: "Sep 3, 2026 08:35 AM",
+//     recipients: 1248,
+//   },
+//   {
+//     id: "NOT-10020",
+//     title: "Security Reminder",
+//     message:
+//       "Please review your account security settings and ensure your account information is up to date.",
+//     type: "Security",
+//     audience: "Active Users",
+//     status: "Sent",
+//     createdAt: "Sep 2, 2026 03:20 PM",
+//     sentAt: "Sep 2, 2026 03:25 PM",
+//     recipients: 892,
+//   },
+//   {
+//     id: "NOT-10019",
+//     title: "Withdrawal Processing Update",
+//     message:
+//       "Withdrawal processing times have been updated. Please review the latest platform information.",
+//     type: "Transaction",
+//     audience: "All Users",
+//     status: "Sent",
+//     createdAt: "Sep 2, 2026 10:15 AM",
+//     sentAt: "Sep 2, 2026 10:20 AM",
+//     recipients: 1248,
+//   },
+//   {
+//     id: "NOT-10018",
+//     title: "Platform Update",
+//     message:
+//       "A new platform update is now available with improvements and performance enhancements.",
+//     type: "System",
+//     audience: "All Users",
+//     status: "Sent",
+//     createdAt: "Sep 1, 2026 01:45 PM",
+//     sentAt: "Sep 1, 2026 01:50 PM",
+//     recipients: 1248,
+//   },
+//   {
+//     id: "NOT-10017",
+//     title: "Admin Meeting Reminder",
+//     message: "Reminder for the upcoming administrative review meeting.",
+//     type: "System",
+//     audience: "Admins",
+//     status: "Scheduled",
+//     createdAt: "Sep 1, 2026 09:00 AM",
+//     recipients: 8,
+//   },
+//   {
+//     id: "NOT-10016",
+//     title: "Welcome Message",
+//     message: "Welcome to BNB. Your account is ready to explore the platform.",
+//     type: "Promotion",
+//     audience: "Active Users",
+//     status: "Draft",
+//     createdAt: "Aug 31, 2026 04:30 PM",
+//     recipients: 892,
+//   },
+// ];
 
 function TypeBadge({ type }: { type: NotificationType }) {
   const config = {
@@ -145,10 +150,10 @@ function StatusBadge({ status }: { status: NotificationStatus }) {
       icon: CheckCircle2,
       className: "bg-emerald-500/10 text-emerald-400",
     },
-    Scheduled: {
-      icon: Clock3,
-      className: "bg-blue-500/10 text-blue-400",
-    },
+    // Scheduled: {
+    //   icon: Clock3,
+    //   className: "bg-blue-500/10 text-blue-400",
+    // },
     Draft: {
       icon: Clock3,
       className: "bg-zinc-500/10 text-zinc-400",
@@ -179,7 +184,7 @@ function SummaryCard({
   icon: React.ElementType;
 }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-[#0b1016] p-5">
+    <div className="rounded-2xl border border-white/6 bg-[#0b1016] p-5">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0b90b]/10 text-[#f0b90b]">
         <Icon size={19} />
       </div>
@@ -193,16 +198,76 @@ function SummaryCard({
   );
 }
 
+// function NotificationMenu({
+//   notification,
+//   onView,
+//   onDelete,
+// }: {
+//   notification: AdminNotification;
+//   onView: () => void;
+//   onDelete: () => void;
+// }) {
+//   const [open, setOpen] = useState(false);
+
+//   return (
+//     <div className="relative">
+//       <button
+//         onClick={() => setOpen((value) => !value)}
+//         className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white"
+//       >
+//         <MoreHorizontal size={18} />
+//       </button>
+
+//       {open && (
+//         <>
+//           <button
+//             aria-label="Close menu"
+//             onClick={() => setOpen(false)}
+//             className="fixed inset-0 z-10 cursor-default"
+//           />
+
+//           <div className="absolute right-0 top-10 z-20 w-44 overflow-hidden rounded-xl border border-white/[0.08] bg-[#111820] p-1 shadow-2xl">
+//             <button
+//               onClick={() => {
+//                 setOpen(false);
+//                 onView();
+//               }}
+//               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+//             >
+//               <Eye size={15} />
+//               View Details
+//             </button>
+
+//             <button
+//               onClick={() => {
+//                 setOpen(false);
+//                 onDelete();
+//               }}
+//               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-red-400 hover:bg-red-500/10"
+//             >
+//               <Trash2 size={15} />
+//               Delete
+//             </button>
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// }
+
 function NotificationMenu({
   notification,
   onView,
+  onSend,
   onDelete,
 }: {
   notification: AdminNotification;
   onView: () => void;
+  onSend: () => void;
   onDelete: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const isDraft = notification.status === "Draft";
 
   return (
     <div className="relative">
@@ -233,16 +298,31 @@ function NotificationMenu({
               View Details
             </button>
 
-            <button
-              onClick={() => {
-                setOpen(false);
-                onDelete();
-              }}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-red-400 hover:bg-red-500/10"
-            >
-              <Trash2 size={15} />
-              Delete
-            </button>
+            {isDraft && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  onSend();
+                }}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-[#f0b90b] hover:bg-[#f0b90b]/10"
+              >
+                <Send size={15} />
+                Send now
+              </button>
+            )}
+
+            {isDraft && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  onDelete();
+                }}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs text-red-400 hover:bg-red-500/10"
+              >
+                <Trash2 size={15} />
+                Delete draft
+              </button>
+            )}
           </div>
         </>
       )}
@@ -250,22 +330,127 @@ function NotificationMenu({
   );
 }
 
+// export default function AdminNotificationsPage() {
+//   const [notifications, setNotifications] =
+//     useState<AdminNotification[]>(initialNotifications);
+
+//   const [search, setSearch] = useState("");
+
+//   const [typeFilter, setTypeFilter] = useState<"All" | NotificationType>("All");
+
+//   const [statusFilter, setStatusFilter] = useState<"All" | NotificationStatus>(
+//     "All",
+//   );
+
+//   const [selectedNotification, setSelectedNotification] =
+//     useState<AdminNotification | null>(null);
+
+//   const [createOpen, setCreateOpen] = useState(false);
+
+//   const [newTitle, setNewTitle] = useState("");
+//   const [newMessage, setNewMessage] = useState("");
+//   const [newType, setNewType] = useState<NotificationType>("System");
+//   const [newAudience, setNewAudience] = useState<Audience>("All Users");
+
+//   const filteredNotifications = useMemo(() => {
+//     const query = search.toLowerCase().trim();
+
+//     return notifications.filter((notification) => {
+//       const matchesType =
+//         typeFilter === "All" || notification.type === typeFilter;
+
+//       const matchesStatus =
+//         statusFilter === "All" || notification.status === statusFilter;
+
+//       const matchesSearch =
+//         !query ||
+//         notification.id.toLowerCase().includes(query) ||
+//         notification.title.toLowerCase().includes(query) ||
+//         notification.message.toLowerCase().includes(query) ||
+//         notification.audience.toLowerCase().includes(query);
+
+//       return matchesType && matchesStatus && matchesSearch;
+//     });
+//   }, [notifications, search, typeFilter, statusFilter]);
+
+//   const sentCount = notifications.filter(
+//     (notification) => notification.status === "Sent",
+//   ).length;
+
+//   const scheduledCount = notifications.filter(
+//     (notification) => notification.status === "Scheduled",
+//   ).length;
+
+//   const totalRecipients = notifications.reduce(
+//     (total, notification) => total + notification.recipients,
+//     0,
+//   );
+
+//   const deleteNotification = (id: string) => {
+//     setNotifications((current) =>
+//       current.filter((notification) => notification.id !== id),
+//     );
+
+//     toast.success("Notification deleted");
+//   };
+
+//   const createNotification = () => {
+//     if (!newTitle.trim() || !newMessage.trim()) {
+//       toast.error("Please enter a title and message");
+//       return;
+//     }
+
+//     const recipientCount =
+//       newAudience === "Admins"
+//         ? 8
+//         : newAudience === "Active Users"
+//           ? 892
+//           : 1248;
+
+//     const notification: AdminNotification = {
+//       id: `NOT-${10022 + notifications.length}`,
+//       title: newTitle.trim(),
+//       message: newMessage.trim(),
+//       type: newType,
+//       audience: newAudience,
+//       status: "Draft",
+//       createdAt: new Date().toLocaleString("en-US", {
+//         month: "short",
+//         day: "numeric",
+//         year: "numeric",
+//         hour: "numeric",
+//         minute: "2-digit",
+//       }),
+//       recipients: recipientCount,
+//     };
+
+//     setNotifications((current) => [notification, ...current]);
+
+//     setNewTitle("");
+//     setNewMessage("");
+//     setNewType("System");
+//     setNewAudience("All Users");
+//     setCreateOpen(false);
+
+//     toast.success("Notification created as draft");
+//   };
+
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
+
 export default function AdminNotificationsPage() {
-  const [notifications, setNotifications] =
-    useState<AdminNotification[]>(initialNotifications);
+  const { notifications, isPending, isError, create, send, remove } =
+    useAdminNotifications();
 
   const [search, setSearch] = useState("");
-
   const [typeFilter, setTypeFilter] = useState<"All" | NotificationType>("All");
-
   const [statusFilter, setStatusFilter] = useState<"All" | NotificationStatus>(
     "All",
   );
-
   const [selectedNotification, setSelectedNotification] =
     useState<AdminNotification | null>(null);
-
   const [createOpen, setCreateOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [newTitle, setNewTitle] = useState("");
   const [newMessage, setNewMessage] = useState("");
@@ -275,13 +460,11 @@ export default function AdminNotificationsPage() {
   const filteredNotifications = useMemo(() => {
     const query = search.toLowerCase().trim();
 
-    return notifications.filter((notification) => {
+    return notifications.filter((notification: any) => {
       const matchesType =
         typeFilter === "All" || notification.type === typeFilter;
-
       const matchesStatus =
         statusFilter === "All" || notification.status === statusFilter;
-
       const matchesSearch =
         !query ||
         notification.id.toLowerCase().includes(query) ||
@@ -293,66 +476,72 @@ export default function AdminNotificationsPage() {
     });
   }, [notifications, search, typeFilter, statusFilter]);
 
-  const sentCount = notifications.filter(
-    (notification) => notification.status === "Sent",
-  ).length;
-
-  const scheduledCount = notifications.filter(
-    (notification) => notification.status === "Scheduled",
-  ).length;
-
-  const totalRecipients = notifications.reduce(
-    (total, notification) => total + notification.recipients,
+  const sent = notifications.filter((n: any) => n.status === "Sent");
+  const sentCount = sent.length;
+  const draftCount = notifications.length - sentCount;
+  const totalRecipients = sent.reduce(
+    (total: any, n: any) => total + n.recipients,
     0,
   );
 
-  const deleteNotification = (id: string) => {
-    setNotifications((current) =>
-      current.filter((notification) => notification.id !== id),
+  const handleSend = async (notification: AdminNotification) => {
+    const ok = window.confirm(
+      `Send "${notification.title}" to ${notification.recipients.toLocaleString()} (${notification.audience})? This can't be undone.`,
     );
+    if (!ok) return;
 
-    toast.success("Notification deleted");
+    try {
+      await send(notification.uuid);
+      toast.success("Notification sent");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
   };
 
-  const createNotification = () => {
+  const handleDelete = async (notification: AdminNotification) => {
+    if (!window.confirm("Delete this draft?")) return;
+
+    try {
+      await remove(notification.uuid);
+      toast.success("Draft deleted");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  };
+
+  const submitNew = async (sendNow: boolean) => {
     if (!newTitle.trim() || !newMessage.trim()) {
       toast.error("Please enter a title and message");
       return;
     }
+    if (
+      sendNow &&
+      !window.confirm(`Send this to ${newAudience} now? This can't be undone.`)
+    ) {
+      return;
+    }
 
-    const recipientCount =
-      newAudience === "Admins"
-        ? 8
-        : newAudience === "Active Users"
-          ? 892
-          : 1248;
+    setSaving(true);
+    try {
+      await create({
+        title: newTitle.trim(),
+        message: newMessage.trim(),
+        type: newType,
+        audience: newAudience,
+        send: sendNow,
+      });
 
-    const notification: AdminNotification = {
-      id: `NOT-${10022 + notifications.length}`,
-      title: newTitle.trim(),
-      message: newMessage.trim(),
-      type: newType,
-      audience: newAudience,
-      status: "Draft",
-      createdAt: new Date().toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      }),
-      recipients: recipientCount,
-    };
-
-    setNotifications((current) => [notification, ...current]);
-
-    setNewTitle("");
-    setNewMessage("");
-    setNewType("System");
-    setNewAudience("All Users");
-    setCreateOpen(false);
-
-    toast.success("Notification created as draft");
+      setNewTitle("");
+      setNewMessage("");
+      setNewType("System");
+      setNewAudience("All Users");
+      setCreateOpen(false);
+      toast.success(sendNow ? "Notification sent" : "Saved as a draft");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -391,21 +580,18 @@ export default function AdminNotificationsPage() {
             description="All notification records"
             icon={Bell}
           />
-
           <SummaryCard
             label="Sent"
             value={sentCount.toString()}
             description="Successfully sent"
             icon={CheckCircle2}
           />
-
           <SummaryCard
-            label="Scheduled"
-            value={scheduledCount.toString()}
-            description="Waiting to be sent"
+            label="Drafts"
+            value={draftCount.toString()}
+            description="Not sent yet"
             icon={Clock3}
           />
-
           <SummaryCard
             label="Recipients"
             value={totalRecipients.toLocaleString()}
@@ -457,25 +643,32 @@ export default function AdminNotificationsPage() {
               </div>
 
               <div className="flex gap-2 overflow-x-auto">
-                {(["All", "Sent", "Scheduled", "Draft"] as const).map(
-                  (status) => (
-                    <button
-                      key={status}
-                      onClick={() => setStatusFilter(status)}
-                      className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-medium ${
-                        statusFilter === status
-                          ? "bg-white/10 text-white"
-                          : "border border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:text-white"
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  ),
-                )}
+                {(["Sent", "Draft"] as const).map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-medium ${
+                      statusFilter === status
+                        ? "bg-white/10 text-white"
+                        : "border border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:text-white"
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
+
+        {isPending && (
+          <p className="text-sm text-zinc-500">Loading notifications…</p>
+        )}
+        {isError && (
+          <p className="text-sm text-red-400">
+            Couldn't load notifications. Please refresh.
+          </p>
+        )}
 
         {/* Desktop Table */}
         <div className="hidden overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0b1016] lg:block">
@@ -514,7 +707,7 @@ export default function AdminNotificationsPage() {
               </thead>
 
               <tbody>
-                {filteredNotifications.map((notification) => (
+                {filteredNotifications.map((notification: any) => (
                   <tr
                     key={notification.id}
                     className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.015]"
@@ -556,10 +749,17 @@ export default function AdminNotificationsPage() {
                     </td>
 
                     <td className="px-6 py-4 text-right">
-                      <NotificationMenu
+                      {/* <NotificationMenu
                         notification={notification}
                         onView={() => setSelectedNotification(notification)}
                         onDelete={() => deleteNotification(notification.id)}
+                      /> */}
+
+                      <NotificationMenu
+                        notification={notification}
+                        onView={() => setSelectedNotification(notification)}
+                        onSend={() => handleSend(notification)}
+                        onDelete={() => handleDelete(notification)}
                       />
                     </td>
                   </tr>
@@ -567,13 +767,12 @@ export default function AdminNotificationsPage() {
               </tbody>
             </table>
           </div>
-
-          {filteredNotifications.length === 0 && <EmptyState />}
+          {!isPending && filteredNotifications.length === 0 && <EmptyState />}
         </div>
 
         {/* Mobile Cards */}
         <div className="space-y-3 lg:hidden">
-          {filteredNotifications.map((notification) => (
+          {filteredNotifications.map((notification: any) => (
             <div
               key={notification.id}
               className="rounded-2xl border border-white/[0.06] bg-[#0b1016] p-4"
@@ -596,7 +795,8 @@ export default function AdminNotificationsPage() {
                 <NotificationMenu
                   notification={notification}
                   onView={() => setSelectedNotification(notification)}
-                  onDelete={() => deleteNotification(notification.id)}
+                  onSend={() => handleSend(notification)}
+                  onDelete={() => handleDelete(notification)}
                 />
               </div>
 
@@ -642,7 +842,7 @@ export default function AdminNotificationsPage() {
             </div>
           ))}
 
-          {filteredNotifications.length === 0 && <EmptyState />}
+          {!isPending && filteredNotifications.length === 0 && <EmptyState />}
         </div>
       </div>
 
@@ -785,13 +985,31 @@ export default function AdminNotificationsPage() {
               </div>
             </div>
 
-            <button
+            {/* <button
               onClick={createNotification}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#f0b90b] py-3 text-sm font-semibold text-black hover:bg-[#f0b90b]/90"
             >
               <Plus size={17} />
               Create Draft
-            </button>
+            </button> */}
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              <button
+                onClick={() => submitNew(false)}
+                disabled={saving}
+                className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] py-3 text-sm font-medium text-zinc-300 hover:bg-white/5 disabled:opacity-50"
+              >
+                Save draft
+              </button>
+
+              <button
+                onClick={() => submitNew(true)}
+                disabled={saving}
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#f0b90b] py-3 text-sm font-semibold text-black hover:bg-[#f0b90b]/90 disabled:opacity-50"
+              >
+                <Send size={16} />
+                {saving ? "Working…" : "Send now"}
+              </button>
+            </div>
           </div>
         </Modal>
       )}

@@ -1,15 +1,41 @@
 import { transactionKeys } from "@/app/api/query-key";
-import { adminListTransactions, adminTransactionStats } from "@/app/api/v1/transaction/transaction";
+import {
+  adminListTransactions,
+  adminTransactionStats,
+} from "@/app/api/v1/transaction/transaction";
 import adminService from "@/services/admin.service";
 import plansService from "@/services/investment-plan.service";
-import { AdminUser } from "@/types/admin";
+import { AdminUser, AuditSeverity, OverviewRange, PendingKind } from "@/types/admin";
 import { PlanInput, PlanStatus } from "@/types/plan";
 import { TransactionType } from "@/types/transaction";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuthSession } from "./useAuthSession";
 
 export const ADMIN_TRANSACTIONS_PAGE_SIZE = 10;
+
+export function useAdminOverview(range: OverviewRange) {
+  const { userId } = useAuthSession();
+
+  return useQuery({
+    queryKey: ["admin", "overview", userId, range],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { points, error } = await adminService.fetchOverview(range);
+      if (error) throw new Error(error.message);
+      return points;
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  });
+}
 
 export function useAdminDashboard() {
   const {
@@ -555,6 +581,204 @@ export function useAdminPlans() {
   };
 }
 
+export function useAdminPending(
+  options: {
+    limit?: number;
+    kinds?: PendingKind[];
+    oldestFirst?: boolean;
+  } = {},
+) {
+  const { limit = 5, kinds, oldestFirst = false } = options;
+  const { userId } = useAuthSession();
+
+  return useQuery({
+    queryKey: [
+      "admin",
+      "pending",
+      userId,
+      limit,
+      kinds?.join(",") ?? "all",
+      oldestFirst,
+    ],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { items, total, error } = await adminService.fetchPending({
+        limit,
+        kinds,
+        oldestFirst,
+      });
+      if (error) throw new Error(error.message);
+      return { items, total };
+    },
+    refetchInterval: 30_000,
+    staleTime: 15_000,
+  });
+}
+
+export function useAdminAudit(params: {
+  severity: AuditSeverity | "All";
+  search: string;
+  page: number;
+  pageSize: number;
+}) {
+  const { userId } = useAuthSession();
+
+  const logsQuery = useQuery({
+    queryKey: [
+      "admin",
+      "audit",
+      "logs",
+      userId,
+      params.severity,
+      params.search,
+      params.page,
+    ],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { logs, total, error } =
+        await adminService.fetchAuditLogs(params);
+      if (error) throw new Error(error.message);
+      return { logs, total };
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
+  });
+
+  const statsQuery = useQuery({
+    queryKey: ["admin", "audit", "stats", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { stats, error } = await adminService.fetchAuditStats();
+      if (error) throw new Error(error.message);
+      return stats;
+    },
+    staleTime: 30_000,
+  });
+
+  return {
+    logs: logsQuery.data?.logs ?? [],
+    total: logsQuery.data?.total ?? 0,
+    isPending: logsQuery.isPending,
+    isError: logsQuery.isError,
+    stats: statsQuery.data ?? { total: 0, info: 0, warning: 0, critical: 0 },
+  };
+}
+
+export function useAdminActivityPreview() {
+  const { userId } = useAuthSession();
+
+  const query = useQuery({
+    queryKey: ["admin", "activity", "preview", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { items, total, error } = await adminService.fetchActivity(5, 0);
+      if (error) throw new Error(error.message);
+      return { items, total };
+    },
+    refetchInterval: 30_000,
+    staleTime: 15_000,
+  });
+
+  return {
+    items: query.data?.items ?? [],
+    total: query.data?.total ?? 0,
+    isPending: query.isPending,
+    isError: query.isError,
+  };
+}
+
+export function useAdminActivityAll(enabled: boolean) {
+  const { userId } = useAuthSession();
+
+  const query = useInfiniteQuery({
+    queryKey: ["admin", "activity", "all", userId],
+    enabled: enabled && !!userId,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const { items, total, error } = await adminService.fetchActivity(
+        20,
+        pageParam,
+      );
+      if (error) throw new Error(error.message);
+      return { items, total };
+    },
+    getNextPageParam: (last, pages) => {
+      const loaded = pages.reduce(
+        (count, page) => count + page.items.length,
+        0,
+      );
+      return loaded < last.total ? loaded : undefined;
+    },
+    staleTime: 30_000,
+  });
+
+  return {
+    items: query.data?.pages.flatMap((page) => page.items) ?? [],
+    isPending: query.isPending,
+    isError: query.isError,
+    hasMore: !!query.hasNextPage,
+    loadMore: () => query.fetchNextPage(),
+    isLoadingMore: query.isFetchingNextPage,
+  };
+}
+
+export function useAdminNotifications() {
+  const { userId } = useAuthSession();
+  const queryClient = useQueryClient();
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["admin", "audit"] });
+  };
+
+  const query = useQuery({
+    queryKey: ["admin", "notifications", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { notifications, error } =
+        await adminService.listNotifications();
+      if (error) throw new Error(error.message);
+      return notifications;
+    },
+    staleTime: 30_000,
+  });
+
+  const create = useMutation({
+    mutationFn: async (
+      input: Parameters<typeof adminService.createNotification>[0],
+    ) => {
+      const { error } = await adminService.createNotification(input);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: refresh,
+  });
+
+  const send = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await adminService.sendNotification(id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: refresh,
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await adminService.deleteNotification(id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: refresh,
+  });
+
+  return {
+    notifications: query.data ?? [],
+    isPending: query.isPending,
+    isError: query.isError,
+    create: create.mutateAsync,
+    send: send.mutateAsync,
+    remove: remove.mutateAsync,
+  };
+}
+
 // // 2. Mutation: Update User Balance & Yield
 // export function useUpdateBalanceMutation() {
 //   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
@@ -626,5 +850,3 @@ export function useAdminPlans() {
 
 //   return toggleSuspendMutation;
 // }
-
-

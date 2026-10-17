@@ -106,3 +106,70 @@ export type AdminDashboard = {
 
 //   pendingActions: AdminPendingAction[];
 // }
+
+export type OverviewRange = "30D" | "7M" | "12M";
+export type OverviewPoint = { label: string; value: number };
+
+export type PendingKind = "withdrawal" | "deposit" | "support";
+export type PendingItem = {
+  id: string;
+  kind: PendingKind;
+  reference: string | null;
+  userName: string;
+  amount: number | null;
+  title: string;
+  status: string;
+  createdAt: string;
+};
+
+export type ActivityItem = {
+  id: string;
+  type: string;
+  user: string;
+  description: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+};
+
+export type NotificationType =
+  | "System"
+  | "Security"
+  | "Transaction"
+  | "Promotion";
+export type NotificationStatus = "Sent" | "Draft";
+// export type NotificationStatus = "Sent" | "Draft" | "All" | "Scheduled";
+export type Audience = "All Users" | "Active Users" | "Admins";
+
+export type AdminNotification = {
+  uuid: string; // used for actions
+  id: string; // the reference shown on screen
+  title: string;
+  message: string;
+  type: NotificationType;
+  audience: Audience;
+  status: NotificationStatus;
+  createdAt: string;
+  sentAt?: string;
+  recipients: number;
+};
+
+export type AuditSeverity = "Info" | "Warning" | "Critical";
+export type AuditLog = {
+  id: string;
+  actor: string;
+  actorEmail: string;
+  action: string;
+  target: string;
+  targetId: string;
+  description: string;
+  severity: AuditSeverity;
+  ipAddress: string;
+  timestamp: string;
+};
+export type AuditStats = {
+  total: number;
+  info: number;
+  warning: number;
+  critical: number;
+};

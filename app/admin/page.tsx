@@ -59,9 +59,9 @@ export default function AdminDashboardPage() {
       <PageHeader />
       <PrimaryStats stats={dashboard.stats} />
       <SecondaryStats stats={dashboard.stats} />
-      <section className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
+      <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1.5fr_1fr]">
         <AdminOverviewChart />
-        <RecentActivity recentActivity={dashboard.recentActivity} />
+        <RecentActivity />
       </section>
       <section>
         <PendingActions />

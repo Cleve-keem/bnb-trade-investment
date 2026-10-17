@@ -15,11 +15,22 @@ import {
 import { useState } from "react";
 import Link from "next/link";
 
-export default function SupportCenter() {
+export default function SupportCenter({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-[#090a0d] px-4 py-8 text-white md:px-8">
+      <div
+        className={
+          embedded
+            ? "text-white"
+            : "min-h-screen bg-[#090a0d] px-4 py-8 text-white md:px-8"
+        }
+      ></div>
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8">

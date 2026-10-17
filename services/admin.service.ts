@@ -1,4 +1,33 @@
+import { actionLabel, describeAudit, titleCase } from "@/libs/formatter/audit";
+import { formatDateTime } from "@/libs/formatter/display";
 import { supabase } from "@/libs/supabase/browser";
+import { ActivityItem, AdminNotification, Audience, AuditLog, AuditSeverity, AuditStats, NotificationType, OverviewPoint, OverviewRange, PendingItem, PendingKind } from "@/types/admin";
+
+const toNotification = (r: any): AdminNotification => ({
+  uuid: r.notification_id,
+  id: r.reference,
+  title: r.title,
+  message: r.message,
+  type: r.notification_type,
+  audience: r.audience,
+  status: r.status === "sent" ? "Sent" : "Draft",
+  createdAt: formatDateTime(r.created_at),
+  sentAt: r.sent_at ? formatDateTime(r.sent_at) : undefined,
+  recipients: r.recipients,
+});
+
+const toAuditLog = (r: any): AuditLog => ({
+  id: r.reference,
+  actor: r.actor_name ?? r.actor_email ?? "System",
+  actorEmail: r.actor_email ?? "—",
+  action: actionLabel(r.action),
+  target: titleCase(r.entity),
+  targetId: r.entity_id ? String(r.entity_id).slice(0, 8) : "—",
+  description: describeAudit(r.action, r.metadata ?? {}),
+  severity: r.severity,
+  ipAddress: r.ip_address ?? "—",
+  timestamp: formatDateTime(r.created_at),
+});
 
 const adminService = {
   /**
@@ -351,6 +380,140 @@ const adminService = {
       adjustment: data,
       error,
     };
+  },
+
+  // ---------- dashboard ----------
+  async fetchOverview(range: OverviewRange) {
+    const { data, error } = await supabase.rpc("admin_overview_series", {
+      p_range: range,
+    });
+    const points: OverviewPoint[] = (data ?? []).map((r: any) => ({
+      label: r.label,
+      value: Number(r.value ?? 0),
+    }));
+    return { points, error };
+  },
+
+  async fetchPending(opts: {
+    limit: number;
+    kinds?: PendingKind[];
+    oldestFirst?: boolean;
+  }) {
+    const { data, error } = await supabase.rpc("admin_list_pending", {
+      p_limit: opts.limit,
+      p_kinds: opts.kinds ?? null,
+      p_oldest_first: opts.oldestFirst ?? false,
+    });
+    const rows = (data ?? []) as any[];
+    const items: PendingItem[] = rows.map((r) => ({
+      id: r.item_id,
+      kind: r.kind,
+      reference: r.reference,
+      userName: r.full_name ?? r.email,
+      amount: r.amount === null ? null : Number(r.amount),
+      title: r.title,
+      status: r.status,
+      createdAt: r.created_at,
+    }));
+    return {
+      items,
+      total: rows.length ? Number(rows[0].total_count) : 0,
+      error,
+    };
+  },
+
+  async fetchActivity(limit: number, offset: number) {
+    const { data, error } = await supabase.rpc("admin_list_transactions", {
+      p_type: null,
+      p_search: null,
+      p_limit: limit,
+      p_offset: offset,
+    });
+    const rows = (data ?? []) as any[];
+    const items: ActivityItem[] = rows.map((r) => ({
+      id: r.entry_id,
+      type: r.entry_type,
+      user: r.full_name ?? r.email,
+      description: r.description,
+      amount: Number(r.amount ?? 0),
+      status: r.status,
+      createdAt: r.occurred_at,
+    }));
+    return {
+      items,
+      total: rows.length ? Number(rows[0].total_count) : 0,
+      error,
+    };
+  },
+
+  // ---------- notifications ----------
+  async listNotifications() {
+    const { data, error } = await supabase.rpc("admin_list_notifications");
+    return { notifications: (data ?? []).map(toNotification), error };
+  },
+
+  async createNotification(input: {
+    title: string;
+    message: string;
+    type: NotificationType;
+    audience: Audience;
+    send: boolean;
+  }) {
+    const { error } = await supabase.rpc("admin_create_notification", {
+      p_title: input.title,
+      p_message: input.message,
+      p_type: input.type,
+      p_audience: input.audience,
+      p_send: input.send,
+    });
+    return { error };
+  },
+
+  async sendNotification(id: string) {
+    const { error } = await supabase.rpc("admin_send_notification", {
+      p_id: id,
+    });
+    return { error };
+  },
+
+  async deleteNotification(id: string) {
+    const { error } = await supabase.rpc("admin_delete_notification", {
+      p_id: id,
+    });
+    return { error };
+  },
+
+  // ---------- audit ----------
+  async fetchAuditLogs(params: {
+    severity: AuditSeverity | "All";
+    search: string;
+    page: number;
+    pageSize: number;
+  }) {
+    const { data, error } = await supabase.rpc("admin_list_audit_logs", {
+      p_severity: params.severity === "All" ? null : params.severity,
+      p_search: params.search || null,
+      p_limit: params.pageSize,
+      p_offset: params.page * params.pageSize,
+    });
+    const rows = (data ?? []) as any[];
+    return {
+      logs: rows.map(toAuditLog),
+      total: rows.length ? Number(rows[0].total_count) : 0,
+      error,
+    };
+  },
+
+  async fetchAuditStats() {
+    const { data, error } = await supabase.rpc("admin_audit_stats");
+    const row = Array.isArray(data) ? data[0] : data;
+    const stats: AuditStats = {
+      total: Number(row?.total ?? 0),
+      info: Number(row?.info ?? 0),
+      warning: Number(row?.warning ?? 0),
+      critical: Number(row?.critical ?? 0),
+    };
+    return { stats, error };
   },
 };
 

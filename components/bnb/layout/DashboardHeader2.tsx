@@ -17,6 +17,7 @@ import { useUser } from "@/hooks/user";
 import ProfileSkeleton from "../dashboard/ProfileSkeleton";
 import { useLogoutMutation } from "@/hooks/auth";
 import useNotifications from "@/hooks/useNotificatiton";
+import Image from "next/image";
 
 type Props = {
   onMenu: () => void;
@@ -50,9 +51,7 @@ export default function DashboardHeader({ onMenu }: Props) {
   const handleNotificationClick = () => {
     setNotificationsOpen((current) => !current);
   };
-
-  const userAvatar = user?.fullname?.trim()?.charAt(0).toUpperCase() ?? "U";
-
+  
   return (
     <header className="sticky top-0 z-30 border-b border-white/6 bg-[#080c11]/90 backdrop-blur-xl">
       <div className="flex h-18 items-center gap-4 px-4 sm:px-6 lg:px-8">
@@ -64,17 +63,6 @@ export default function DashboardHeader({ onMenu }: Props) {
         >
           <Menu size={20} />
         </button>
-        {/* Search */}
-        {/* <div className="relative hidden w-full max-w-md sm:block">
-          <Search
-            size={17}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600"
-          />
-          <input
-            placeholder="Search assets, markets..."
-            className="h-10 w-full rounded-xl border border-white/6 bg-white/2.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-[#f0b90b]/40"
-          />
-        </div> */}
         {/* Right side */}
         <div className="ml-auto flex items-center gap-2">
           {/* Notifications */}
@@ -104,12 +92,18 @@ export default function DashboardHeader({ onMenu }: Props) {
                 type="button"
                 onClick={() => setProfileOpen((current) => !current)}
                 aria-expanded={profileOpen}
-                className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 p-1.5 pr-3 transition hover:bg-white/5"
+                className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 p-1.5 transition hover:bg-white/5"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f0b90b] text-sm font-bold text-black">
-                  {userAvatar}
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-xl font-black text-black">
+                  <Image
+                    src="/logo2.png"
+                    alt="BNB Logo"
+                    fill
+                    className="object-contain"
+                    priority
+                    sizes="(max-width: 768px) 34px, 34px"
+                  />
                 </div>
-
                 <div className="hidden text-left sm:block">
                   <p className="text-xs font-medium text-white">
                     {user?.fullname ?? "User"}
