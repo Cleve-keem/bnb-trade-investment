@@ -1,9 +1,6 @@
 import { MarketAsset } from "@/app/(dashboard)/markets/types/market";
 import { NextResponse } from "next/server";
 
-// Server-side cache: Next.js dedupes and reuses this fetch across all
-// incoming requests for 60s, so N concurrent users = 1 upstream call,
-// not N. Adjust the window to trade off freshness vs. rate-limit safety.
 export const revalidate = 60;
 
 const COINGECKO_IDS = [

@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import walletService from "@/services/wallet.service";
-import depositInstructionsService from "@/services/deposit.service";
 import { useAuthSession } from "./useAuthSession";
 import { supabase } from "@/libs/supabase/browser";
 import userService from "@/services/user.service";
+import { useEffect } from "react";
+import depositInstructionsService from "@/services/deposit-instructions.service";
 
 export function useWalletList() {
   const {
@@ -56,6 +57,37 @@ export function useWithdrawFormData() {
     },
     staleTime: 15_000,
   });
+}
+
+export function useWalletRealtime() {
+  const { userId } = useAuthSession();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`wallet-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "wallets",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+          queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+          queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
 }
 
 export function useDepositInstructions() {

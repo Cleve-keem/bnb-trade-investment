@@ -5,7 +5,12 @@ import {
 } from "@/app/api/v1/transaction/transaction";
 import adminService from "@/services/admin.service";
 import plansService from "@/services/investment-plan.service";
-import { AdminUser, AuditSeverity, OverviewRange, PendingKind } from "@/types/admin";
+import {
+  AdminUser,
+  AuditSeverity,
+  OverviewRange,
+  PendingKind,
+} from "@/types/admin";
 import { PlanInput, PlanStatus } from "@/types/plan";
 import { TransactionType } from "@/types/transaction";
 import {
@@ -129,28 +134,10 @@ export function useAdminDashboard() {
           status: transaction.status,
         }));
 
-      // -------------------------
-      // OVERVIEW CHART
-      // -------------------------
-
-      const overviewChart = [];
-
-      // -------------------------
-      // PENDING ACTIONS
-      // -------------------------
-
-      const pendingActions = [];
-
-      // -------------------------
-      // FINAL DASHBOARD OBJECT
-      // -------------------------
-
       return {
         stats,
-        // overviewChart,
         recentActivity,
         recentTransactions,
-        // pendingActions,
       };
     },
 
@@ -635,8 +622,7 @@ export function useAdminAudit(params: {
     ],
     enabled: !!userId,
     queryFn: async () => {
-      const { logs, total, error } =
-        await adminService.fetchAuditLogs(params);
+      const { logs, total, error } = await adminService.fetchAuditLogs(params);
       if (error) throw new Error(error.message);
       return { logs, total };
     },
@@ -735,8 +721,7 @@ export function useAdminNotifications() {
     queryKey: ["admin", "notifications", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { notifications, error } =
-        await adminService.listNotifications();
+      const { notifications, error } = await adminService.listNotifications();
       if (error) throw new Error(error.message);
       return notifications;
     },

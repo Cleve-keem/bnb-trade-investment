@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/libs/supabase/browser";
 import { useAuthSession } from "./useAuthSession";
+import settingsService from "@/services/settings.service";
+import { AdminSettings } from "@/types/settings";
 
 export type UserSettings = {
   currency: "USD" | "EUR";
@@ -65,4 +67,62 @@ export function useSettings() {
     isError: query.isError,
     update,
   };
+}
+
+const KEY = ["admin", "settings"];
+
+export function useAdminSettings() {
+  const { userId } = useAuthSession();
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: [...KEY, userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { settings, meta, error } =
+        await settingsService.fetchAdminSettings();
+      if (error) throw new Error(error.message);
+      return { settings, meta };
+    },
+    staleTime: 30_000,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (changes: Partial<AdminSettings>) => {
+      const { count, error } = await settingsService.saveSettings(changes);
+      if (error) throw new Error(error.message);
+      return count;
+    },
+    // Returning the promise makes the save wait until fresh values are loaded
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: KEY }),
+        queryClient.invalidateQueries({ queryKey: ["public-settings"] }),
+        queryClient.invalidateQueries({
+          queryKey: ["deposit", "instructions"],
+        }),
+        queryClient.invalidateQueries({ queryKey: ["admin", "audit"] }),
+      ]),
+  });
+
+  return {
+    settings: query.data?.settings,
+    meta: query.data?.meta,
+    isPending: query.isPending,
+    isError: query.isError,
+    save: mutation.mutateAsync,
+    isSaving: mutation.isPending,
+  };
+}
+
+export function usePublicSettings() {
+  return useQuery({
+    queryKey: ["public-settings"],
+    queryFn: async () => {
+      const { settings, error } = await settingsService.fetchPublicSettings();
+      if (error) throw new Error(error.message);
+      return settings;
+    },
+    staleTime: 5 * 60_000,
+  });
 }
