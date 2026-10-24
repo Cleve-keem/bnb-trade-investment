@@ -24,13 +24,6 @@ export default function SupportCenter({
 
   return (
     <div className="min-h-screen bg-[#090a0d] px-4 py-8 text-white md:px-8">
-      <div
-        className={
-          embedded
-            ? "text-white"
-            : "min-h-screen bg-[#090a0d] px-4 py-8 text-white md:px-8"
-        }
-      ></div>
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8">
@@ -38,11 +31,9 @@ export default function SupportCenter({
             <Headphones size={17} />
             Support Center
           </div>
-
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
             How can we help?
           </h1>
-
           <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
             Get assistance with your account, deposits, withdrawals, trading and
             other BNB services.
@@ -52,20 +43,16 @@ export default function SupportCenter({
         {/* Contact hero */}
         <div className="relative mb-8 overflow-hidden rounded-3xl border border-white/8 bg-linear-to-br from-blue-500/1.2 via-white/3 to-purple-500/8 p-6 md:p-8">
           <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[#f0b90b]/10 blur-3xl" />
-
           <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0b90b]/10 text-[#f0b90b]">
                 <MessageCircle size={23} />
               </div>
-
               <h2 className="text-xl font-semibold">Chat with BNB Support</h2>
-
               <p className="mt-2 max-w-xl text-sm leading-6 text-gray-400">
                 Need help with your account or transaction? Chat with our
                 customer support team and we'll help you resolve your issue.
               </p>
-
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 <Link
                   href="/help/chat"
@@ -84,13 +71,11 @@ export default function SupportCenter({
                 </a>
               </div>
             </div>
-
             <div className="rounded-2xl border border-white/8 bg-black/20 p-5 md:min-w-55">
               <div className="flex items-center gap-2 text-sm font-medium text-white">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 Support available
               </div>
-
               <p className="mt-2 text-xs leading-5 text-gray-500">
                 Monday – Sunday
                 <br />
@@ -107,13 +92,11 @@ export default function SupportCenter({
             title="Live Support"
             description="Chat directly with the BNB support team."
           />
-
           <SupportCard
             icon={<ShieldCheck size={20} />}
             title="Account Security"
             description="Get help with account and security concerns."
           />
-
           <SupportCard
             icon={<Clock3 size={20} />}
             title="Transaction Help"
@@ -127,7 +110,6 @@ export default function SupportCenter({
             <h2 className="text-lg font-semibold">
               Frequently Asked Questions
             </h2>
-
             <p className="mt-1 text-sm text-gray-500">
               Quick answers to common questions.
             </p>
@@ -136,7 +118,6 @@ export default function SupportCenter({
           <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/2">
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
-
               return (
                 <div
                   key={faq.question}
@@ -150,7 +131,6 @@ export default function SupportCenter({
                     <span className="text-sm font-medium text-gray-200">
                       {faq.question}
                     </span>
-
                     {isOpen ? (
                       <ChevronDown
                         size={17}
@@ -163,7 +143,6 @@ export default function SupportCenter({
                       />
                     )}
                   </button>
-
                   {isOpen && (
                     <div className="px-5 pb-5">
                       <p className="max-w-3xl text-sm leading-6 text-gray-500">
@@ -176,7 +155,6 @@ export default function SupportCenter({
             })}
           </div>
         </section>
-
         {/* Bottom */}
         <div className="mt-8 flex items-center justify-center gap-2 text-xs text-gray-600">
           <Sparkles size={13} />
@@ -201,9 +179,7 @@ function SupportCard({
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-[#f0b90b]">
         {icon}
       </div>
-
       <h3 className="text-sm font-semibold text-white">{title}</h3>
-
       <p className="mt-2 text-xs leading-5 text-gray-500">{description}</p>
     </div>
   );

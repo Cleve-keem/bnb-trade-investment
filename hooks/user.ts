@@ -61,48 +61,99 @@ export function useUserDashboard() {
       if (walletError) throw new Error(walletError.message);
       if (!wallet) throw new Error("User wallet not found.");
 
-      const [
-        { walletTransactions, error: walletTransactionsError },
-        { investments, error: investmentsError },
-      ] = await Promise.all([
-        userService.fetchUserWalletTransactions(wallet.id, 5),
-        userService.fetchUserInvestments(profile.id),
-      ]);
+      const { walletTransactions, error: transactionsError } =
+        await userService.fetchUserWalletTransactions(wallet.id, 5);
 
-      if (walletTransactionsError)
-        throw new Error(walletTransactionsError.message);
-      if (investmentsError) throw new Error(investmentsError.message);
+      if (transactionsError) throw new Error(transactionsError.message);
 
       const firstname = profile.full_name?.trim().split(/\s+/)[0] ?? "";
-
-      const investedAmount = investments
-        .filter((investment) =>
-          ["active", "pending"].includes(investment.status),
-        )
-        .reduce(
-          (total, investment) => total + Number(investment.amount ?? 0),
-          0,
-        );
-
-      const totalPortfolio = Number(wallet.balance ?? 0) + investedAmount;
-      const totalReturn = investments
-        .filter((i) => i.status !== "cancelled")
-        .reduce((total, i) => total + Number(i.expected_profit ?? 0), 0);
-
-      const recentTransactions = walletTransactions.slice(0, 5);
 
       return {
         firstname,
         wallet,
-        total_return: totalReturn,
-        total_portfolio: totalPortfolio,
-        recentTransactions,
+        recentTransactions: walletTransactions.slice(0, 5),
       };
     },
     staleTime: 30_000,
   });
+
   return { dashboard, isPending, isError, refetch, error };
 }
+
+// export function useUserDashboard() {
+//   const {
+//     data: dashboard,
+//     isPending,
+//     refetch,
+//     isError,
+//     error,
+//   } = useQuery({
+//     queryKey: ["user", "user-dashboard"],
+
+//     queryFn: async () => {
+//       const {
+//         data: { session },
+//         error,
+//       } = await supabase.auth.getSession();
+
+//       if (error) throw new Error(error.message);
+//       if (!session?.user) return null;
+
+//       const { profile, error: profileError } =
+//         await userService.fetchUserProfileById(session.user.id);
+
+//       if (profileError) throw new Error(profileError.message);
+//       if (!profile) throw new Error("User profile not found.");
+
+//       const { wallet, error: walletError } = await userService.fetchUserWallet(
+//         profile.id,
+//       );
+
+//       if (walletError) throw new Error(walletError.message);
+//       if (!wallet) throw new Error("User wallet not found.");
+
+//       const [
+//         { walletTransactions, error: walletTransactionsError },
+//         { investments, error: investmentsError },
+//       ] = await Promise.all([
+//         userService.fetchUserWalletTransactions(wallet.id, 5),
+//         userService.fetchUserInvestments(profile.id),
+//       ]);
+
+//       if (walletTransactionsError)
+//         throw new Error(walletTransactionsError.message);
+//       if (investmentsError) throw new Error(investmentsError.message);
+
+//       const firstname = profile.full_name?.trim().split(/\s+/)[0] ?? "";
+
+//       const investedAmount = investments
+//         .filter((investment) =>
+//           ["active", "pending"].includes(investment.status),
+//         )
+//         .reduce(
+//           (total, investment) => total + Number(investment.amount ?? 0),
+//           0,
+//         );
+
+//       const totalPortfolio = Number(wallet.balance ?? 0) + investedAmount;
+//       const totalReturn = investments
+//         .filter((i) => i.status !== "cancelled")
+//         .reduce((total, i) => total + Number(i.expected_profit ?? 0), 0);
+
+//       const recentTransactions = walletTransactions.slice(0, 5);
+
+//       return {
+//         firstname,
+//         wallet,
+//         total_return: totalReturn,
+//         total_portfolio: totalPortfolio,
+//         recentTransactions,
+//       };
+//     },
+//     staleTime: 30_000,
+//   });
+//   return { dashboard, isPending, isError, refetch, error };
+// }
 
 export function useUser() {
   const { userId, isLoading: isSessionLoading } = useAuthSession();

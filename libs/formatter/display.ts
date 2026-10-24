@@ -44,3 +44,30 @@ export function formatDateTime(iso: string) {
     minute: "2-digit",
   });
 }
+
+export function formatMoney(amount: number, currency = "USD") {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`;
+  }
+}
+
+// 4000 -> "4,000.00" (no currency symbol; the code is shown next to it)
+export function formatAmount(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+// 4000 -> "4K", 1200000 -> "1.2M" (for chart axes)
+export function formatCompactNumber(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}

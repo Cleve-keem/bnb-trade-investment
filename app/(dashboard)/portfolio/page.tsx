@@ -19,8 +19,14 @@ export default function PortfolioPage() {
           </p>
         </div>
 
+        {isError && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300">
+            We couldn't load your portfolio. Please refresh the page.
+          </div>
+        )}
+
         <PortfolioSummaryCard
-          label="Total Porfolio Value"
+          label="Total Portfolio Value"
           value={summary?.total_value ?? 0}
           hideable={false}
           showSparkline={false}
@@ -45,6 +51,7 @@ export default function PortfolioPage() {
           <div className="border-b border-white/6 p-5">
             <h2 className="font-medium">Holdings</h2>
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full min-w-162.5">
               <thead className="border-b border-white/5 text-left text-xs text-zinc-600">
@@ -92,7 +99,7 @@ export default function PortfolioPage() {
                     >
                       <td className="px-5 py-5">
                         <p className="text-sm font-medium">{h.plan_name}</p>
-                        <p className="text-xs text-zinc-600 capitalize">
+                        <p className="text-xs capitalize text-zinc-600">
                           {h.status}
                         </p>
                       </td>
@@ -116,7 +123,11 @@ export default function PortfolioPage() {
                         </div>
                       </td>
                       <td
-                        className={`px-5 py-5 text-sm ${h.change_percentage >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                        className={`px-5 py-5 text-sm ${
+                          h.change_percentage >= 0
+                            ? "text-emerald-400"
+                            : "text-red-400"
+                        }`}
                       >
                         {h.change_percentage >= 0 ? "+" : ""}
                         {h.change_percentage}%
@@ -127,11 +138,148 @@ export default function PortfolioPage() {
               </tbody>
             </table>
           </div>
+
+          <p className="border-t border-white/6 px-5 py-3 text-[11px] text-zinc-600">
+            Value includes profit earned so far. Profit is paid to your wallet
+            when the investment matures.
+          </p>
         </div>
       </div>
     </DashboardShell>
   );
 }
+
+// "use client";
+
+// import { Wallet, TrendingUp } from "lucide-react";
+// import PortfolioChart from "@/components/bnb/dashboard/PortfolioChart";
+// import DashboardShell from "@/components/bnb/layout/DashBoardShell";
+// import { usePortfolioSummary } from "@/hooks/usePortfolio";
+// import PortfolioSummaryCard from "@/components/bnb/portfolio/portfolioSummaryCard";
+
+// export default function PortfolioPage() {
+//   const { summary, holdings, isPending, isError, fmt } = usePortfolioSummary();
+
+//   return (
+//     <DashboardShell>
+//       <div className="space-y-6">
+//         <div>
+//           <h1 className="text-3xl font-semibold">Portfolio</h1>
+//           <p className="mt-2 text-sm text-zinc-500">
+//             Detailed overview of your asset allocation.
+//           </p>
+//         </div>
+//         <PortfolioSummaryCard
+//           label="Total Porfolio Value"
+//           value={summary?.total_value ?? 0}
+//           hideable={false}
+//           showSparkline={false}
+//           metrics={[
+//             {
+//               icon: Wallet,
+//               label: "Total Invested",
+//               value: summary?.total_invested ?? 0,
+//             },
+//             {
+//               icon: TrendingUp,
+//               label: "Total Return",
+//               value: summary?.total_return ?? 0,
+//               positive: (summary?.total_return ?? 0) >= 0,
+//             },
+//           ]}
+//         />
+//         <PortfolioChart />
+//         <div className="overflow-hidden rounded-2xl border border-white/6 bg-[#0d131a]">
+//           <div className="border-b border-white/6 p-5">
+//             <h2 className="font-medium">Holdings</h2>
+//           </div>
+//           <div className="overflow-x-auto">
+//             <table className="w-full min-w-162.5">
+//               <thead className="border-b border-white/5 text-left text-xs text-zinc-600">
+//                 <tr>
+//                   <th className="px-5 py-4">Plan</th>
+//                   <th className="px-5 py-4">Invested</th>
+//                   <th className="px-5 py-4">Current Value</th>
+//                   <th className="px-5 py-4">Allocation</th>
+//                   <th className="px-5 py-4">Return</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {isPending ? (
+//                   <tr>
+//                     <td
+//                       colSpan={5}
+//                       className="px-5 py-8 text-center text-sm text-zinc-600"
+//                     >
+//                       Loading holdings…
+//                     </td>
+//                   </tr>
+//                 ) : isError ? (
+//                   <tr>
+//                     <td
+//                       colSpan={5}
+//                       className="px-5 py-8 text-center text-sm text-red-400"
+//                     >
+//                       Couldn't load holdings.
+//                     </td>
+//                   </tr>
+//                 ) : holdings.length === 0 ? (
+//                   <tr>
+//                     <td
+//                       colSpan={5}
+//                       className="px-5 py-8 text-center text-sm text-zinc-600"
+//                     >
+//                       No active investments yet.
+//                     </td>
+//                   </tr>
+//                 ) : (
+//                   holdings.map((h) => (
+//                     <tr
+//                       key={h.investment_id}
+//                       className="border-b border-white/4 last:border-0"
+//                     >
+//                       <td className="px-5 py-5">
+//                         <p className="text-sm font-medium">{h.plan_name}</p>
+//                         <p className="text-xs text-zinc-600 capitalize">
+//                           {h.status}
+//                         </p>
+//                       </td>
+//                       <td className="px-5 py-5 text-sm text-zinc-400">
+//                         {fmt(h.amount)}
+//                       </td>
+//                       <td className="px-5 py-5 text-sm">
+//                         {fmt(h.current_value)}
+//                       </td>
+//                       <td className="px-5 py-5">
+//                         <div className="flex items-center gap-3">
+//                           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-white/6">
+//                             <div
+//                               className="h-full rounded-full bg-[#f0b90b]"
+//                               style={{ width: `${h.allocation_percentage}%` }}
+//                             />
+//                           </div>
+//                           <span className="text-xs text-zinc-500">
+//                             {h.allocation_percentage}%
+//                           </span>
+//                         </div>
+//                       </td>
+//                       <td
+//                         className={`px-5 py-5 text-sm ${h.change_percentage >= 0 ? "text-emerald-400" : "text-red-400"}`}
+//                       >
+//                         {h.change_percentage >= 0 ? "+" : ""}
+//                         {h.change_percentage}%
+//                       </td>
+//                     </tr>
+//                   ))
+//                 )}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       </div>
+//     </DashboardShell>
+//   );
+// }
 
 // "use client";
 
