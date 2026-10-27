@@ -56,6 +56,25 @@ export default function ChatThread({
         )}
 
         {messages.map((m) => {
+          if (m.sender_role === "system") {
+            return (
+              <div
+                key={m.id}
+                className={`flex ${viewer === "admin" ? "justify-end" : "justify-start"}`}
+              >
+                <div className="max-w-[80%] rounded-2xl border border-dashed border-white/10 bg-white/2 px-4 py-2.5 text-sm text-zinc-300">
+                  <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-[#f0b90b]">
+                    Automated reply
+                  </p>
+                  <p className="whitespace-pre-wrap wrap-break-word">{m.body}</p>
+                  <p className="mt-1 text-[10px] text-zinc-600">
+                    {time(m.created_at)}
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
           const mine = m.sender_role === viewer;
           return (
             <div

@@ -14,6 +14,8 @@ const ACTION_LABELS: Record<string, string> = {
   delete_plan: "Plan Deleted",
   send_notification: "Notification Sent",
   delete_notification: "Notification Deleted",
+  save_auto_reply: "Auto Reply Saved",
+  delete_auto_reply: "Auto Reply Deleted",
 };
 
 export const titleCase = (text: string) =>
@@ -55,6 +57,10 @@ export function describeAudit(action: string, meta: Record<string, any> = {}) {
       return `Sent "${meta.title}" to ${meta.audience} (${meta.recipients})`;
     case "delete_notification":
       return `Deleted draft "${meta.title}"`;
+    case "save_auto_reply":
+      return `Saved auto reply "${meta.name}" (${meta.kind}${meta.active ? "" : ", off"})`;
+    case "delete_auto_reply":
+      return `Deleted auto reply "${meta.name}"`;
     default:
       return actionLabel(action);
   }

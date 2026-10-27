@@ -3,6 +3,7 @@
 import ChatThread from "@/components/bnb/support/chat-thread";
 import { useAdminSupport } from "@/hooks/support";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function AdminSupportPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -15,14 +16,24 @@ export default function AdminSupportPage() {
     <div className="min-h-screen bg-[#080c11] p-4 text-white sm:p-6 lg:p-8">
       <div className="mx-auto max-w-400">
         <div className="mb-6">
-          <div className="mb-2 flex items-center gap-2 text-xs text-zinc-500">
-            <span>Admin</span>
-            <span>/</span>
-            <span className="text-zinc-300">Support</span>
+          <div className="mb-2 flex flex-col gap-2 text-xs md:flex-row md:items-center md:justify-between">
+            <div className="mb-2 text-zinc-500">
+              <div className="mb-2 flex items-center gap-2 text-xs text-zinc-500">
+                <span>Admin</span>
+                <span>/</span>
+                <span className="text-zinc-300">Support</span>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Support Inbox
+              </h1>
+            </div>
+            <Link
+              href="/admin/support/auto-replies"
+              className="rounded-xl border border-white/8 px-3 py-2 text-xs text-zinc-300 hover:bg-white/5"
+            >
+              Auto replies
+            </Link>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Support Inbox
-          </h1>
         </div>
 
         <div className="grid h-[75vh] gap-4 lg:grid-cols-[340px_1fr]">

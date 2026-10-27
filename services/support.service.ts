@@ -1,5 +1,5 @@
 import { supabase } from "@/libs/supabase/browser";
-import type { SupportConversation, SupportMessage } from "@/types/support";
+import type { AutoReply, AutoReplyInput, SupportConversation, SupportMessage } from "@/types/support";
 
 const COLUMNS =
   "id, conversation_id, user_id, sender_id, sender_role, body, read_at, created_at";
@@ -77,6 +77,40 @@ const supportService = {
     const { error } = await supabase.rpc("admin_set_support_status", {
       p_conversation_id: conversationId,
       p_status: status,
+    });
+    return { error };
+  },
+
+  async listAutoReplies() {
+    const { data, error } = await supabase.rpc("admin_list_auto_replies");
+    const replies: AutoReply[] = (data ?? []).map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      kind: r.kind,
+      keywords: r.keywords ?? [],
+      reply: r.reply,
+      isActive: r.is_active,
+      sortOrder: r.sort_order,
+    }));
+    return { replies, error };
+  },
+
+  async saveAutoReply(input: AutoReplyInput) {
+    const { error } = await supabase.rpc("admin_save_auto_reply", {
+      p_id: input.id,
+      p_name: input.name,
+      p_kind: input.kind,
+      p_keywords: input.keywords,
+      p_reply: input.reply,
+      p_is_active: input.isActive,
+      p_sort_order: input.sortOrder,
+    });
+    return { error };
+  },
+
+  async deleteAutoReply(id: string) {
+    const { error } = await supabase.rpc("admin_delete_auto_reply", {
+      p_id: id,
     });
     return { error };
   },

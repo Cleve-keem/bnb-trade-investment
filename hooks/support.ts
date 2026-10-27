@@ -6,9 +6,12 @@ import { supabase } from "@/libs/supabase/browser";
 import supportService from "@/services/support.service";
 import type { SupportMessage } from "@/types/support";
 import { useAuthSession } from "./useAuthSession";
+import type { AutoReplyInput } from "@/types/support";
 
 const append = (old: SupportMessage[] = [], msg: SupportMessage) =>
-  old.some((m) => m.id === msg.id) ? old : [...old, msg];
+  old.some((m) => m.id === msg.id)
+    ? old
+    : [...old, msg].sort((a, b) => a.created_at.localeCompare(b.created_at));
 
 export function useSupportChat() {
   const { userId } = useAuthSession();
@@ -246,5 +249,50 @@ export function useAdminSupport(selectedId: string | null) {
     reply: replyMutation.mutateAsync,
     isReplying: replyMutation.isPending,
     setStatus: statusMutation.mutate,
+  };
+}
+
+const KEY = ["admin", "support", "auto-replies"];
+
+export function useAutoReplies() {
+  const queryClient = useQueryClient();
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: KEY });
+    queryClient.invalidateQueries({ queryKey: ["admin", "audit"] });
+  };
+
+  const query = useQuery({
+    queryKey: KEY,
+    queryFn: async () => {
+      const { replies, error } = await supportService.listAutoReplies();
+      if (error) throw new Error(error.message);
+      return replies;
+    },
+    staleTime: 30_000,
+  });
+
+  const save = useMutation({
+    mutationFn: async (input: AutoReplyInput) => {
+      const { error } = await supportService.saveAutoReply(input);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: refresh,
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supportService.deleteAutoReply(id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: refresh,
+  });
+
+  return {
+    replies: query.data ?? [],
+    isPending: query.isPending,
+    isError: query.isError,
+    save: save.mutateAsync,
+    remove: remove.mutateAsync,
   };
 }
