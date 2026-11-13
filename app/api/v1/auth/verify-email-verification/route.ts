@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     if (dbError)
       throw new Error(`Database token write error: ${dbError.message}`);
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const absoluteConfirmationUrl = `${baseUrl}/api/auth/confirm-email?token=${verificationToken}`;
 
     const { error: mailError } = await resendService.emails.send({

@@ -38,6 +38,10 @@ function LoginNotificationHandler() {
       );
     }
 
+    if (searchParams.get("reset") === "success") {
+      toast.success("Password updated. Please sign in with your new password.");
+    }
+
     if (error) {
       if (error === "token_expired") {
         toast.error("Verification parameters expired. Please re-register.");

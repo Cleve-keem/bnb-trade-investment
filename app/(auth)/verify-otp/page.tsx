@@ -44,8 +44,7 @@ export default function VerifyOtpForm() {
     const loadingToast = toast.loading("Generating a new verification code...");
 
     try {
-      // await AuthService.resendFirstLoginOtp();
-
+      await AuthService.prepareFirstLoginOtp();
       toast.dismiss(loadingToast);
       toast.success("A new verification code has been sent to your email.");
     } catch (error: any) {

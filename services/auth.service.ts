@@ -15,6 +15,7 @@ export const AuthService = {
       email: data.email,
       password: data.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login?verified=true`,
         data: {
           username: data.username,
           full_name: fullName.trim(),
@@ -50,7 +51,6 @@ export const AuthService = {
     });
 
     const result = await response.json();
-
     if (!response.ok) {
       throw new Error(result.error || "Unable to send verification code.");
     }
